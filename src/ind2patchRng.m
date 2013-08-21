@@ -19,4 +19,4 @@ patchInd = [floor(ind/patchNum(2)/patchNum(3)), mod(floor(ind/patchNum(3)),patch
 
 % Convert the index in each dimension into a range to extract from the image. If the patch falls over the edge
 % of the image be sure to cut off the range.
-patchRng = arrayfun(@(ind,sz,isz) (ind*sz/2+1):min((ind+2)*sz/2,isz),  patchInd, patchSz, imSz, 'UniformOutput', 0); 
+patchRng = arrayfun(@(ind,sz,isz) [(ind*sz/2+1), min((ind+2)*sz/2,isz)],  patchInd, patchSz, imSz, 'UniformOutput', 0); 
