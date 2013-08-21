@@ -14,11 +14,9 @@ xyzRng = ind2patchLoc(patchNum,[x,y,z],patchSz);
 patch = zeros([patchSz,length(tRng)]);
 for it=1:length(tRng)
   for iz=1:length(xyzRng{3})
-  		if xyzRng{3}(iz) <= z
-      tmp = imread(fullfile(basePath,exptDir,...
-    	       ['/dff_aligned/dff_aligned_T' num2str(tRng(it)) '_slice' num2str(xyzRng{3}(iz)) '.jp2']),...
-            'PixelRegion',xyzRng(1:2));
-    	 patch(1:length(xyzRng{1}),1:length(xyzRng{2}),iz,it) = (double(tmp) - 15000)/5000;
-   	end
+    tmp = imread(fullfile(basePath,exptDir,...
+  	       ['/dff_aligned/dff_aligned_T' num2str(tRng(it)) '_slice' num2str(xyzRng{3}(iz)) '.jp2']),...
+          'PixelRegion',xyzRng(1:2));
+  	 patch(1:length(xyzRng{1}),1:length(xyzRng{2}),iz,it) = (double(tmp) - 15000)/5000;
   end
 end
