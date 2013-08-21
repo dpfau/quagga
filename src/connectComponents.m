@@ -1,4 +1,4 @@
-function ROI = connect_components(ROI,overlap)
+function ROI = connectComponents(ROI,overlap)
 
 if ~isempty(ROI)
     X = 1;
@@ -15,12 +15,12 @@ if ~isempty(ROI)
         end
         
         % Resolve which component to merge into which
-        merge_sets = get_ancestors(X>overlap);
+        mergeSets = getAncestors(X>overlap);
         
         % Merge components
-        ROI_ = cell(1,length(merge_sets));
-        for i = 1:length(merge_sets)
-            ROI_{i} = apply(@plus,ROI{merge_sets{i}});
+        ROI_ = cell(1,length(mergeSets));
+        for i = 1:length(mergeSets)
+            ROI_{i} = apply(@plus,ROI{mergeSets{i}});
         end
         ROI = ROI_;
     end

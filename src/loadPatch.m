@@ -3,7 +3,7 @@ function patch = loadPatch(patchNum,imSz,patchSz,dataPath)
 tRng = [1:imSz(4)];
 % use the patchNum (scalar) and patchSz (3x1) to figure out the range of x and y values
 patchSz = [64,64,4];
-xyzRng = ind2patchLoc(patchNum,imSz(1:3),patchSz);
+xyzRng = ind2patchRng(patchNum,imSz(1:3),patchSz);
 
 patch = zeros([patchSz,length(tRng)]);
 for it=1:length(tRng)

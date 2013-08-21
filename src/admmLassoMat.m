@@ -1,4 +1,4 @@
-function [X,Y] = admm_lasso_mat(A,B,l,X0,Y0,verbose)
+function [X,Y] = admmLassoMat(A,B,l,X0,Y0,verbose)
 % Implements ADMM for LASSO regression:
 % X = argmin_X l*||X||_1 + 1/2||X*A-B||^2_F
 % Here X, B and A are all matrices

@@ -17,7 +17,7 @@ iter = 0;
 while abs(obj-obj_) > 1e-5*obj && iter < maxIter
     iter = iter+1;
     H = trustRegionMin(W,X);
-    [W,Y] = admm_lasso_mat(H,X,l,W,Y,false);
+    [W,Y] = admmLassoMat(H,X,l,W,Y,false);
     obj_ = obj;
     obj  = l*sum(abs(W(:)))+1/2*norm(W*H-X,'fro')^2;
     if verbose

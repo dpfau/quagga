@@ -1,4 +1,4 @@
-function ancestor_set = get_ancestors(G)
+function ancestorSet = getAncestors(G)
 % Given a directed graph G
 % find all sets of ancestors from a given node which are not subsets of any
 % other such sets
@@ -18,7 +18,7 @@ end
 S = zeros(N);
 for m = 1:N 
     for n = [1:m-1,m+1:N]
-        if subset(ancestor_list{n},ancestor_list{m})
+        if subset(ancestorList{n},ancestorList{m})
             S(m,n) = true;
             if S(n,m) % the sets are mutual subsets, therefore equal
                 S(n,m) = false;
@@ -26,20 +26,20 @@ for m = 1:N
         end
     end
 end
-ancestor_set = ancestor_list(sum(S)==0);
+ancestorSet = ancestorList(sum(S)==0);
 
-    function [ancestors, visited] = ancestor_recurse(idx,parents,children,ancestors,visited)
+    function [ancestors, visited] = ancestorRecurse(idx,parents,children,ancestors,visited)
         visited(idx) = 1;
-        if isempty(ancestor_list{idx})
+        if isempty(ancestorList{idx})
             ancestors = union(ancestors, idx);
             for i = find(children' == idx)
                 p = parents(i);
                 if ~visited(p)
-                    [ancestors, visited] = ancestor_recurse(p,parents,children,ancestors,visited);
+                    [ancestors, visited] = ancestorRecurse(p,parents,children,ancestors,visited);
                 end
             end
         else
-            ancestors = union(ancestors, ancestor_list{idx});
+            ancestors = union(ancestors, ancestorList{idx});
         end
     end
 end

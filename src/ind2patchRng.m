@@ -1,4 +1,4 @@
-function patchRng = ind2patchLoc(ind,imSz,patchSz)
+function patchRng = ind2patchRng(ind,imSz,patchSz)
 % Given the index for a cluster array job, convert that index into an x, y and z range
 % for loading in a patch from a full image. If no patch size is provided, assumes the 
 % default patch size of [64,64,4]
