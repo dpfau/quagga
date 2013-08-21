@@ -1,9 +1,10 @@
 function roiFromPatch(patchNum)
 
+patchNum = str2num(patchNum);
 imSz = [1472,2048,41,1000];
 patchSz = [64,64,4];
 dataPath = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_sharing_01/12-10-05/Dre_L1_HuCGCaMP5_0_20121005_154312.corrected.processed';
-outputPath = '.'; % can change this as desired
+outputPath = '/groups/freeman/freemanlab/Janelia/quagga/test/'; % can change this as desired
 
 numPC = 15; % number of sparse PCs to look at in patch
 sparseWeight = 0.2; % weight on the sparse penalty for patch
