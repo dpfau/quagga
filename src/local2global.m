@@ -9,7 +9,7 @@ function globalROI = local2global(localROI,imSz,patchRng)
 % globalROI - cell array of ROI values in global coordinates
 
 for i = 1:3
-	   assert(size(localROI,i)==numel(patchRng{i}))
+	   assert(size(localROI,i)==(diff(patchRng{i})+1))
 end
 
 globalROI = cell(imSz(3),1);
@@ -19,5 +19,5 @@ end
 
 patchSz = size(localROI);
 for i = 1:size(localROI,3)
-    globalROI{patchRng{3}(i)}(patchRng{1}(1):patchRng{1}(2),patchRng{2}(1):patchRng{2}(2)) = localROI(:,:,i);
+    globalROI{patchRng{3}(1)+i-1}(patchRng{1}(1):patchRng{1}(2),patchRng{2}(1):patchRng{2}(2)) = localROI(:,:,i);
 end
