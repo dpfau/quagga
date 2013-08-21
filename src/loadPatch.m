@@ -8,14 +8,17 @@ dataPath = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_sh
 
 tRng = [1:t];
 % use the patchNum (scalar) and patchSz (3x1) to figure out the range of x and y values
-xRng = [];
-yRng = [];
-zRng = [];
+patchSz = [64,64,4];
+xyzRng = ind2patchLoc(patchNum,[x,y,z],patchSz);
 
-patch = zeros(length(xRng),length(yRng),length(zRng),length(tRng));
+patch = zeros([patchSz,length(tRng)]);
 for it=1:length(tRng)
-  for iz=1:length(zRng)
-    tmp = imread(fullfile(basePath,exptDir,['/dff_aligned/dff_aligned_T' num2str(tRng(it)) '_slice' num2str(zRng(iz)) '.jp2']));
-    patch(:,:,iz,it) = (double(tmp) - 15000)/5000;
+  for iz=1:length(xyzRng{3})
+  		if xyzRng{3}(iz) <= z
+      tmp = imread(fullfile(basePath,exptDir,...
+    	       ['/dff_aligned/dff_aligned_T' num2str(tRng(it)) '_slice' num2str(xyzRng{3}(iz)) '.jp2']),...
+            'PixelRegion',xyzRng(1:2));
+    	 patch(1:length(xyzRng{1}),1:length(xyzRng{2}),iz,it) = (double(tmp) - 15000)/5000;
+   	end
   end
 end

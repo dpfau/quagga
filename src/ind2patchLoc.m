@@ -1,5 +1,5 @@
-function patchLoc = ind2patchLoc(ind,imSz,patchSz)
-% Given the index for a cluster array job, convert that index into an x, y and z offset
+function patchRng = ind2patchLoc(ind,imSz,patchSz)
+% Given the index for a cluster array job, convert that index into an x, y and z range
 % for loading in a patch from a full image. If no patch size is provided, assumes the 
 % default patch size of [64,64,4]
 
@@ -17,5 +17,6 @@ patchNum = arrayfun(@(imDim,patchDim) 2*ceil(imDim/patchDim)-1, imSz, patchSz);
 % Convert the global index of a patch into an index for each dimension. 
 patchInd = [floor(ind/patchNum(2)/patchNum(3)), mod(floor(ind/patchNum(3)),patchNum(2)),mod(ind,patchNum(3))];
 
-% Convert the index in each dimension into a pixel offset
-patchLoc = arrayfun(@(ind,sz) ind*sz/2,  patchInd, patchSz); 
+% Convert the index in each dimension into a range to extract from the image. If the patch falls over the edge
+% of the image be sure to cut off the range.
+patchRng = arrayfun(@(ind,sz,isz) (ind*sz/2+1):min((ind+2)*sz/2,isz),  patchInd, patchSz, imSz, 'UniformOutput', 0); 
