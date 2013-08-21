@@ -2,6 +2,7 @@ function loadPatch(patchNum,patchSz)
 
 x = 1472;
 y = 2048;
+z = 41;
 t = 1000;
 dataPath = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_sharing_01/12-10-05/Dre_L1_HuCGCaMP5_0_20121005_154312.corrected.processed';
 
