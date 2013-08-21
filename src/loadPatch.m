@@ -1,15 +1,9 @@
-function loadPatch(patchNum,patchSz)
+function patch = loadPatch(patchNum,imSz,patchSz,dataPath)
 
-x = 1472;
-y = 2048;
-z = 41;
-t = 1000;
-dataPath = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_sharing_01/12-10-05/Dre_L1_HuCGCaMP5_0_20121005_154312.corrected.processed';
-
-tRng = [1:t];
+tRng = [1:imSz(4)];
 % use the patchNum (scalar) and patchSz (3x1) to figure out the range of x and y values
 patchSz = [64,64,4];
-xyzRng = ind2patchLoc(patchNum,[x,y,z],patchSz);
+xyzRng = ind2patchLoc(patchNum,imSz(1:3),patchSz);
 
 patch = zeros([patchSz,length(tRng)]);
 for it=1:length(tRng)
