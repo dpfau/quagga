@@ -6,10 +6,10 @@ function ancestorSet = getAncestors(G)
 subset = @(x,y) length(unique(x)) == length(intersect(x,y));
 N = size(G,1);
 [parents, children] = find(G);
-ancestor_list = cell(N,1);
+ancestorList = cell(N,1);
 for n = 1:N
-    if isempty(ancestor_list{n})
-        ancestor_list{n} = ancestor_recurse(n,parents,children,[],zeros(N,1));
+    if isempty(ancestorList{n})
+        ancestorList{n} = ancestorRecurse(n,parents,children,[],zeros(N,1));
     end
 end
 
