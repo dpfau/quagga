@@ -19,5 +19,5 @@ end
 
 patchSz = size(localROI);
 for i = 1:size(localROI,3)
-    globalROI{patchRng{3}(i)}(patchRng{1}(1):patchRng{1}(2),patchRng{2}(1):patchRng{2}(2)}) = localROI(:,:,i);
+    globalROI{patchRng{3}(i)}(patchRng{1}(1):patchRng{1}(2),patchRng{2}(1):patchRng{2}(2)) = localROI(:,:,i);
 end
