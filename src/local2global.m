@@ -8,6 +8,7 @@ function globalROI = local2global(localROI,imSz,patchRng)
 %
 % globalROI - cell array of ROI values in global coordinates
 
+keyboard
 for i = 1:3
 	   assert(size(localROI,i)==(diff(patchRng{i})+1))
 end
