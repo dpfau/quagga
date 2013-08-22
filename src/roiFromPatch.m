@@ -1,5 +1,6 @@
 function roiFromPatch(patchNum)
 
+debug = true;
 patchNum = str2num(patchNum);
 imSz = [1472,2048,41,1000];
 patchSz = [64,64,4];
@@ -21,11 +22,24 @@ if prctile(std(patch,[],2),99) > 0.07 % threshold to decide there is more than n
 	% in different sparse PCs but significantly overlap in space. This is all within
 	% one patch. This will be followed by a step that merges ROIs across different
 	% patches
-	ROI = cellfun(@(x) local2global(x,imSz(1:3),patchRng),...
-	              segregateComponents(reshape(W,[patchSz,numPC])),...
-	              'UniformOutput', 0);
+	if debug
+		[ROI, junk] = segregateComponents(reshape(W,[patchSz,numPC]));
+		ROI  = cellfun(@(x) local2global(x,imSz(1:3),patchRng), ROI,  'UniformOutput', 0);
+		junk = cellfun(@(x) local2global(x,imSz(1:3),patchRng), junk, 'UniformOutput', 0);
+	else
+		ROI = cellfun(@(x) local2global(x,imSz(1:3),patchRng),...
+	          	    segregateComponents(reshape(W,[patchSz,numPC])),...
+	           	   'UniformOutput', 0);
+	end
 else
 	ROI = {};
+	if debug
+		junk = {};
+	end
 end
 
-save(fullfile(outputPath,['patch_' num2str(patchNum)]), 'ROI')
+if debug
+	save(fullfile(outputPath,['patch_' num2str(patchNum)]), 'ROI', 'junk')
+else
+	save(fullfile(outputPath,['patch_' num2str(patchNum)]), 'ROI')
+end

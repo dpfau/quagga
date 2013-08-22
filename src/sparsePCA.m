@@ -3,7 +3,7 @@ function [W,H] = sparsePCA(X,l,k,W0)
 % and H has k rows.
 
 verbose = true;
-maxIter = 30;
+maxIter = 100;
 if nargin < 4
     [u,s,~] = svd(X,0);
     W = u(:,1:k)*sqrt(s(1:k,1:k));
@@ -42,7 +42,7 @@ n = size(X,2);
 
 eps_rel = 1e-3;
 eps_abs = 1e-3;
-maxIter = 50;
+maxIter = 1000;
 minIter = 3;
 rho = 10;
 

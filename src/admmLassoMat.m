@@ -10,7 +10,7 @@ assert(q==n)
 
 eps_rel = 1e-3;
 eps_abs = 1e-3;
-maxIter = 50;
+maxIter = 1000;
 minIter = 10;
 
 shrinkage = @(x,t) sign(x).*max(abs(x)-t,0);
