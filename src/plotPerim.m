@@ -1,14 +1,15 @@
-function plotPerim(patchNum)
+function plotPerim(ind,imSz,patchSz)
 
-if ~exist(['patch_' num2str(patchNum) '.mat'],'file')
-	roiFromPatch(num2str(patchNum));
+if ~exist(['patch_' num2str(ind) '.mat'],'file')
+	roiFromPatch(num2str(ind));
 end
 
-load(['patch_' num2str(patchNum) '.mat'])
+load(['patch_' num2str(ind) '.mat'])
 
-imSz = [1472,2048,41];
-patchSz = [64,64,4];
-patchRng = ind2patchRng(patchNum,imSz,patchSz);
+if nargin < 2, imSz = [1472,2048,41]; end
+if nargin < 3, patchSz = [64,64,4]; end
+	
+patchRng = ind2patchRng(ind,imSz,patchSz);
 numPatch = length(ROI);
 patch = zeros([patchSz,numPatch]);
 

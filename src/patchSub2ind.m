@@ -3,9 +3,8 @@ function ind = patchSub2ind(sub,imSz,patchSz)
 % indexed from 0 (makes modulo arithmetic easier), converts it into a global
 % index
 
-if nargin < 3
-	patchSz = [64,64,4];
-end
+if nargin < 2, imSz = [1472,2048,41]; end
+if nargin < 3, patchSz = [64,64,4]; end
 
 patchNum = arrayfun(@(imDim,patchDim) 2*ceil(imDim/patchDim)-1, imSz, patchSz); 
 for i = 1:3

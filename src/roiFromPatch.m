@@ -1,17 +1,21 @@
-function roiFromPatch(patchNum)
+function roiFromPatch(ind, imSz, patchSz, dataPath, outputPath)
 
 debug = true;
-patchNum = str2num(patchNum);
-imSz = [1472,2048,41,1000];
-patchSz = [64,64,4];
-dataPath = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_sharing_01/12-10-05/Dre_L1_HuCGCaMP5_0_20121005_154312.corrected.processed';
-outputPath = '/groups/freeman/freemanlab/Janelia/quagga/test/'; % can change this as desired
+ind = str2num(ind); % Has to be passed as a string because of the way arguments are passed to compiled matlab
+if nargin < 2, imSz = [1472,2048,41,1000]; end
+if nargin < 3, patchSz = [64,64,4]; end
+if nargin < 4
+	dataPath = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_sharing_01/12-10-05/Dre_L1_HuCGCaMP5_0_20121005_154312.corrected.processed';
+end
+if nargin < 5
+	outputPath = '/groups/freeman/freemanlab/Janelia/quagga/test/'; % can change this as desired
+end
 
 numPC = 15; % number of sparse PCs to look at in patch
 sparseWeight = 0.2; % weight on the sparse penalty for patch
 
 % Load patch from data file
-[patch,patchRng] = loadPatch(patchNum,imSz,patchSz,dataPath);
+[patch,patchRng] = loadPatch(ind,imSz,patchSz,dataPath);
 
 patch = reshape(patch,prod(patchSz),imSz(4));
 if prctile(std(patch,[],2),99) > 0.07 % threshold to decide there is more than noise in this patch
@@ -39,7 +43,7 @@ else
 end
 
 if debug
-	save(fullfile(outputPath,['patch_' num2str(patchNum)]), 'ROI', 'junk')
+	save(fullfile(outputPath,['patch_' num2str(ind)]), 'ROI', 'junk')
 else
-	save(fullfile(outputPath,['patch_' num2str(patchNum)]), 'ROI')
+	save(fullfile(outputPath,['patch_' num2str(ind)]), 'ROI')
 end

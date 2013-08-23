@@ -1,14 +1,14 @@
-function plotROIs(patchNum)
+function plotROIs(ind,imSz,patchSz)
 
-imSz = [1472,2048,41,1000];
-patchSz = [64,64,4];
-patchRng = ind2patchRng(patchNum,imSz(1:3),patchSz);
+if nargin < 2, imSz = [1472,2048,41,1000]; end
+if nargin < 3, patchSz = [64,64,4]; end
+patchRng = ind2patchRng(ind,imSz(1:3),patchSz);
 
-if ~exist(['patch_' num2str(patchNum) '.mat'],'file')
-	roiFromPatch(num2str(patchNum));
+if ~exist(['patch_' num2str(ind) '.mat'],'file')
+	roiFromPatch(num2str(ind));
 end
 
-load(['patch_' num2str(patchNum) '.mat'])
+load(['patch_' num2str(ind) '.mat'])
 
 colormap gray
 for i = 1:length(ROI)
