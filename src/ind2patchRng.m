@@ -6,6 +6,9 @@ function [patchRng, patchSub] = ind2patchRng(ind,imSz,patchSz)
 ind = ind-1; % when calling the script, index from 1, but for modulo arithmetic, easier to index from 0
 if nargin < 2, imSz = [1472,2048,41]; end
 if nargin < 3, patchSz = [64,64,4]; end
+if length(imSz) > length(patchSz)
+	imSz = imSz(1:length(patchSz)); % This came up often enough that it's easier just to protect against it.
+end
 
 % The total number of patches along each dimension. 
 % Since each patch is halfway over from its neighbor, there are 2*ceil(imSize/patchSize)-1
