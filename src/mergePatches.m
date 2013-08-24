@@ -29,9 +29,11 @@ for i = 1:length(patches)
 		[rng2,sub2] = ind2patchRng(ind(j),imSz,patchSz);
 		if ~any(abs(sub1-sub2)>1) % if the patches overlap (i.e. no subscript is off by more than one)...
 			rng = cellfun(@(x,y) [max(x(1),y(1)) min(x(2),y(2))], rng1, rng2, 'UniformOutput', 0); % the range of the overlap
-			Z = zeros(length(patches{i}),length(patches{j}));
-			for p = 1:length(patches{i}) % ...then iterate over ROIs in the patch
-				for q = 1:length(patches{j})
+            ni = length(patches{i});
+            nj = length(patches{j});
+			Z = zeros(ni,nj);
+            for p = 1:ni % ...then iterate over ROIs in the patch
+                for q = 1:nj
 					roiInd1 = ones(size(patches{i}{p},1),1); % Index of roi pixels in the overlap between patches
 					roiInd2 = ones(size(patches{j}{q},1),1);
 					% Filter out the pixels that aren't in the overlap between patches
@@ -42,13 +44,13 @@ for i = 1:length(patches)
 					% turn the subscripts into actual lists of indices
 					ind1 = sub2ind(imSz,patches{i}{p}(roiInd1,1),patches{i}{p}(roiInd1,2),patches{i}{p}(roiInd1,3)); 
 					ind2 = sub2ind(imSz,patches{j}{q}(roiInd2,1),patches{j}{q}(roiInd2,2),patches{j}{q}(roiInd2,3));
-					if length(intersect(ind1,ind2))/length(union(ind1,ind2)) > 0.5 % The Jaccard index between sets of indices
+                    if length(intersect(ind1,ind2))/length(union(ind1,ind2)) > 0.5 % The Jaccard index between sets of indices
 						Z(p,q) = 1;
-					end
-				end
-			end
-			toMerge(patchInd(i)+(1:p),patchInd(j)+(1:q)) = Z;
-			toMerge(patchInd(j)+(1:q),patchInd(i)+(1:p)) = Z';
+                    end
+                end
+            end
+			toMerge(patchInd(i)+(1:ni),patchInd(j)+(1:nj)) = Z;
+			toMerge(patchInd(j)+(1:nj),patchInd(i)+(1:ni)) = Z';
 		end
 	end
 end
