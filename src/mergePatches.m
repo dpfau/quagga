@@ -1,4 +1,4 @@
-function mergePatches(ind,imSz,patchSz,roiPath)
+function ROI = mergePatches(ind,imSz,patchSz,roiPath)
 % From the output of ROI detection on individual patches, merge together
 % the results in patches specified by the range in "ind"
 

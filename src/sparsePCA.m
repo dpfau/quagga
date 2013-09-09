@@ -2,6 +2,7 @@ function [W,H] = sparsePCA(X,l,k,W0)
 % Approximately solve min_Y l||W||_1 + 1/2*||W*H-X||^2_F, where W has k columns
 % and H has k rows.
 
+X = X/std(X(:)); % scale the data to something reasonable
 verbose = true;
 maxIter = 100;
 if nargin < 4
