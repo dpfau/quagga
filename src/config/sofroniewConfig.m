@@ -1,6 +1,6 @@
-imSz = [512,512,725];
-patchSz = [40,40];
-loader = @sofroniewLoader
+imSz = [512,512,1,725];
+patchSz = [40,40,1];
+loader = @sofroniewLoader;
 
 
 % Laundry list of things that need to be standardized across data sets, or set based on data-specific parameters:
