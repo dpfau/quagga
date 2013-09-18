@@ -1,4 +1,4 @@
-function roiFromPatch(ind, imSz, patchSz, outputPath, loader)
+function [ROI,junk,patch] = roiFromPatch(ind, imSz, patchSz, outputPath, loader)
 
 debug = true;
 ind = str2num(ind); % Has to be passed as a string because of the way arguments are passed to compiled matlab
@@ -16,12 +16,12 @@ if length(patchSz) == 3
 else
 	numPC = 5;
 end
-sparseWeight = 2; % weight on the sparse penalty for patch
+sparseWeight = 3; % weight on the sparse penalty for patch
 
 % Load patch from data file
 [patch,patchRng] = loadPatch(ind,imSz,patchSz,loader);
 
-patch = reshape(patch,prod(patchSz),imSz(4));
+patch = reshape(patch,prod(patchSz),imSz(end));
 if prctile(std(patch,[],2),99) > 0.07 % threshold to decide there is more than noise in this patch
 	% Run sparse PCA on data in patch
 	patch = bsxfun(@minus,patch,mean(patch,2));
@@ -47,7 +47,7 @@ else
 end
 
 if debug
-	save(fullfile(outputPath,['patch_' num2str(ind)]), 'ROI', 'junk')
+	save(fullfile(outputPath,['patch_' num2str(ind)]), 'ROI', 'junk','W','H')
 else
 	save(fullfile(outputPath,['patch_' num2str(ind)]), 'ROI')
 end
