@@ -1,4 +1,4 @@
-function [ROI, junk] = segregateComponents(W)
+function [ROI, junk] = segregateComponents(spatialPC)
 % From the results of sparsification, find connected components, merge
 % components that appear to be from the same neuron, discard components
 % that are too small and separate components that look like different
@@ -31,10 +31,10 @@ if nargout == 2
 end
 
 accept = @(x) nnz(x) > minPix && nnz(x) < maxPix;
-for i = 1:size(W,4)
-    img = W(:,:,:,i);
-    CC = bwconncomp(abs(img)>thresh*max(W(:)),26);
-    tempROI = cellfun(@(x) makeImg(x,W(:,:,:,i)), CC.PixelIdxList, 'UniformOutput', 0); % Before filtering
+for i = 1:size(spatialPC,4)
+    img = spatialPC(:,:,:,i);
+    CC = bwconncomp(abs(img)>thresh*max(spatialPC(:)),26);
+    tempROI = cellfun(@(x) makeImg(x,spatialPC(:,:,:,i)), CC.PixelIdxList, 'UniformOutput', 0); % Before filtering
     ROI = [ROI tempROI(cellfun(accept, tempROI))];
     if nargout == 2
         junk = [junk tempROI(cellfun(@(x) ~accept(x) && nnz(x) > 50, tempROI))]; 
@@ -49,10 +49,10 @@ goodIdx = cellfun(@(x) SA2Vol(x) < minSA2Vol, ROI);
 junk = [junk ROI(~goodIdx)];
 ROI = ROI(goodIdx);
 
-function img = makeImg(idx,W)
+function img = makeImg(idx,spatialPC)
 
-img = zeros(size(W));
-img(idx) = W(idx);
+img = zeros(size(spatialPC));
+img(idx) = spatialPC(idx);
 
 function x = SA2Vol(ROI)
 % approximates the surface area to volume ratio, which should be small for a neuron and high for junk

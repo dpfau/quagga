@@ -12,7 +12,7 @@ y = y(:,1);
 
 % do the splitting by checking several thresholds and picking the one with the smallest NCut
 l = linspace(min(y),max(y),10);
-[~,i] = min(arrayfun(@(x)NCut(W,y>x),l));
+[~,i] = min(arrayfun(@(x)full(NCut(W,y>x)),l));
 y = y>l(i);
 
 function ncut = NCut(W,x)
