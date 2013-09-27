@@ -1,5 +1,6 @@
 imSz = [512,512,1,725];
-patchSz = [40,40,1];
+neuronSz = [10,10,1];
+patchSz = [20,20,1];
 loader = @sofroniewLoader;
 
 

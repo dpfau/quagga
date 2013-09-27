@@ -1,4 +1,4 @@
-function [ROI, junk] = segregateComponents(spatialPC)
+function [ROI, junk] = segregateComponents(spatialPC,patchSz,neuronSz)
 % From the results of sparsification, find connected components, merge
 % components that appear to be from the same neuron, discard components
 % that are too small and separate components that look like different
@@ -13,8 +13,8 @@ function [ROI, junk] = segregateComponents(spatialPC)
 thresh = 0.01;
 
 % If a connected component has pixels outside this range, throw it out.
-minPix = 75;
-maxPix = 3000;
+minPix = prod(neuronSz)/3;
+maxPix = patchSz(1)*patchSz(2)*0.75; % might want to tweak this
 
 % Fraction of one component that must be overlapping another to be
 % considered part of that component
@@ -24,6 +24,12 @@ overlap = 0.5;
 minSA2Vol = 2;
 
 %% Threshold pixels and find connected components
+
+% since I often switch between representing different spatial PCs as columns or (2D or 3D) patches, 
+% check which is which (i.e. Murphy's law protection)
+if ndims(spatialPC) == 2
+    spatialPC = reshape(spatialPC,[patchSz, size(spatialPC,2)]); 
+end
 
 ROI = {};
 if nargout == 2

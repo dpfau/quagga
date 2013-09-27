@@ -1,14 +1,23 @@
-function [W,H,mX,sX] = sparsePCA(X,l,k,W0)
-% Approximately solve min_Y l||W||_1 + 1/2*||W*H-X||^2_F, where W has k columns
-% and H has k rows.
+function [W,H,mX,sX] = sparsePCA(X,l,k,verbose,W0)
+% Approximately solve min_Y l*sqrt(T)*||W||_1 + 1/2*||W*H-X||^2_F, where W has k 
+% columns and H has k rows and T columns. To avoid the trivial solution where W 
+% is driven to 0 and H blows up, also constrain the rows of H to be inside 
+% the unit norm ball.
+%
+% Also returns the mean (mX) and total standard deviation (sX) of the data.
+% Note that W*H+mX should give the sparse least-squares approximation to the
+% scaled version of X, not the original input.
 
 sX = std(X(:));
 X = X/sX; % scale the data to something reasonable
 mX = mean(X,2);
 X = bsxfun(@minus,X,mX);
-verbose = true;
-maxIter = 100;
+l = l*sqrt(size(X,2)); % This allows the results to scale properly as the number of columns in H increases.
 if nargin < 4
+    verbose = true;
+end
+maxIter = 100;
+if nargin < 5
     [u,s,~] = svd(X,0);
     W = u(:,1:k)*sqrt(s(1:k,1:k));
 else

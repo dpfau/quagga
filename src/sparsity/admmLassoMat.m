@@ -1,6 +1,7 @@
 function [X,Y] = admmLassoMat(A,B,l,X0,Y0,verbose)
 % Implements ADMM for LASSO regression:
 % X = argmin_X l*||X||_1 + 1/2||X*A-B||^2_F
+% and Y is the Lagrange multiplier (useful for initializing the next step)
 % Here X, B and A are all matrices
 % David Pfau, 2013
 
