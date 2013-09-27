@@ -36,16 +36,16 @@ while ( (r_p > e_p || r_d > e_d) && iter < maxIter ) || iter < minIter
     Z_ = shrinkage( X + Y/rho, l/rho );
     Y  = Y + rho*( X - Z_ );
     
-    r_p = norm( X - Z_ );
-    r_d = rho*norm( Z - Z_ );
-    e_p = sqrt(n)*eps_abs + eps_rel*max( norm(X), norm(Z_) );
-    e_d = sqrt(n)*eps_abs + eps_rel*max( norm(Y) );
+    r_p = norm( X - Z_, 'fro' );
+    r_d = rho*norm( Z - Z_, 'fro' );
+    e_p = sqrt(n)*eps_abs + eps_rel*max( norm(X, 'fro'), norm(Z_, 'fro') );
+    e_d = sqrt(n)*eps_abs + eps_rel*max( norm(Y, 'fro') );
     
     Z = Z_;
     
     if verbose
         fprintf( '\t\t%1.2e\t %1.2e\t %1.2e\t %1.2e\t %1.2e\t %d\n', ...
-            l*sum(abs(X(:))) + 1/2*norm( X*A - B )^2, r_p, e_p, r_d, e_d, nnz(abs(X(:))>max(X(:))/1e3) );
+            l*sum(abs(X(:))) + 1/2*norm( X*A - B, 'fro' )^2, r_p, e_p, r_d, e_d, nnz(abs(X(:))>max(X(:))/1e3) );
     end
     iter = iter + 1;
 end
