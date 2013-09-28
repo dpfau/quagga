@@ -5,7 +5,16 @@ q = 800;
 X = randn(p,q);
 beta = randn(q,1).*(rand(q,1)<0.2);
 Y = X*beta + randn(p,1);
-lars(X,Y);
+tic
+x = admmLasso(X,Y,2); 
+admm_time = toc;
+
+tic
+lars(X,Y,nnz(abs(x)>max(abs(x))/1e3));
+lars_time = toc;
+
+fprintf('ADMM: %fs, LARS: %fs\n',admm_time,lars_time)
+keyboard
 
 k = 5;
 
