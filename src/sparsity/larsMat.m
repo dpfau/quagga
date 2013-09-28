@@ -19,23 +19,29 @@ sA = sum(A.^2,2);
 A  = bsxfun(@rdivide,A,sqrt(sA));
 mB = mean(B(:));
 B  = B-mB;
-cA = A*A'; % inner product of the rows of A, precomputed for speed
 
 X = zeros(p,m);
 mu = zeros(p,q); % prediction
-active = zeros(p,m);
+active = false(p,m);
 resid = B;
 obj_old = 1/2*norm(resid,'fro');
+j = Inf;
 for k = 1:numel(X)
 	% Pretty much switch to Efron et al notation here, which might get a bit confusing with my notation X, A and B (their beta, X and Y)
 	c = resid*A'; % the current correlations.
-	C = max(abs(C(:)));
-	active = abs(c)==C; % active set (should have at least one more element than on the last iteration)
-	keyboard % debug point: check that the active set grows by one each step, and that numerical rounding isn't screwing us
+	[C,j_] = max(abs(c(~active)));
+    if k == 1
+    	active(j_) = true; % active set (should have at least one more element than on the last iteration)
+    else
+    	idx = find(~active); % after debugging, might want to turn it off. this is probably slow.
+        assert(idx(j_)==j);
+    end
 
 	u_A = zeros(p,q);
 	for i = 1:p
-		u_A(i,:) = sum(pinv(diag(sign(c(i,active(i,:))))*A(active(i,:),:)));
+		if any(active(i,:))
+			u_A(i,:) = sum(pinv(diag(sign(c(i,active(i,:))))*A(active(i,:),:)));
+		end
 	end
 	u_A = u_A/norm(u_A,'fro'); % normalize equiangular vector
 	A_A = A(1,:)*u_A(1,:)'; % since this is equiangular, should be the same for all rows
@@ -43,12 +49,13 @@ for k = 1:numel(X)
 	a = u_A*A';
 	gamma_1 = (C-c)./(A_A-a);
 	gamma_2 = (C+c)./(A_A+a);
-	gamma_1(gamma_1<=0 || active) = Inf; % remove elements that are already active or would result in an increase of the residual
-	gamma_2(gamma_2<=0 || active) = Inf;
+	gamma_1(gamma_1<=0 | active) = Inf; % remove elements that are already active or would result in an increase of the residual
+	gamma_2(gamma_2<=0 | active) = Inf;
 	gamma_mat = min(gamma_1,gamma_2);
-	[gamma,j] = min(gamma_mat); % the new coefficient to add to the prediction, as well as the index of the new element in the active set (to check on the next iteration)
+	[gamma,j] = min(gamma_mat(:)); % the new coefficient to add to the prediction, as well as the index of the new element in the active set (to check on the next iteration)
 	mu = mu + gamma*u_A;
 	resid = B-mu;
+    active(j) = 1;
 
 	% obj_new = l*sum(abs(X(:))) + 1/2*norm(resid,'fro')^2;
 	% if obj_new > obj_old
