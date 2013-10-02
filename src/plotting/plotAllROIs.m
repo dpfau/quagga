@@ -7,26 +7,28 @@ if nargin < 5, yRng = [1, size(img,2)]; end
 assert(diff(xRng)+1==size(img,1))
 assert(diff(yRng)+1==size(img,2))
 
-mask = zeros(size(img));
-center = zeros(length(ROI),2);
-for i = 1:length(ROI)
-	disp(num2str(i))
-	idx = ROI{i}(:,3) == z & ...
-          ROI{i}(:,1) >= xRng(1) & ...
-          ROI{i}(:,1) <= xRng(2) & ...
-          ROI{i}(:,2) >= yRng(1) & ...
-          ROI{i}(:,2) <= yRng(2);
-    center(i,1) = mean(ROI{i}(idx,1));
-    center(i,2) = mean(ROI{i}(idx,2));   
-	roi = sparse(ROI{i}(idx,1),ROI{i}(idx,2),ROI{i}(idx,4),size(img,1),size(img,2));
-	edges = edge(full(roi),'Canny');
-	mask(edges==1) = 1;
+imSz = size(img);
+if length(imSz) == 4
+	roiSz = imSz(1:3);
+else
+	roiSz = [imSz(1:2), 1];
 end
+roiLen = length(ROI);
+roiMat = roi2matrix(ROI,roiSz);
+
+cols = jet(roiLen);
+cols = cols(randperm(roiLen),:);
 clf
-showmask(img,mask,true);
+imagesc(img(:,:,z)');
+colormap gray
+axis image
 hold on
-for i = 1:length(ROI)
-	if ~any(isnan(center(i,:)))
-		text(center(i,2),center(i,1),num2str(i),'Color','g','FontSize',10)
+for i = 1:roiLen
+	roiImg = reshape(roiMat(:,i),roiSz);
+	if any(vec(roiImg(:,:,z)))
+		B = bwboundaries(roiImg(:,:,z)~=0,'noholes');
+		assert(length(B)==1) % from the way ROIs are constructed, should never be multiple connected components
+		line([B{1}(:,1)'; B{1}(2:end,1)', B{1}(1,1)],[B{1}(:,2)'; B{1}(2:end,2)', B{1}(1,2)],'Color',cols(i,:),'LineWidth',1);
+		text(mean(B{1}(:,1)),mean(B{1}(:,2)),num2str(i),'Color','g','FontSize',10);
 	end
 end
