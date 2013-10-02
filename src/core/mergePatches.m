@@ -2,10 +2,6 @@ function ROI = mergePatches(ind,imSz,patchSz,roiPath)
 % From the output of ROI detection on individual patches, merge together
 % the results in patches specified by the range in "ind"
 
-% if nargin < 2, imSz = [1472,2048,41,1000]; end
-% if nargin < 3, patchSz = [64,64,4]; end
-% if nargin < 4, roiPath = '/Users/pfau/Documents/Research/Janelia/data/ROIs/test'; end
-
 patches = cell(length(ind),1);
 for i = 1:length(ind)
 	roiFile = fullfile(roiPath,['patch_' num2str(ind(i)) '.mat']);
@@ -31,29 +27,9 @@ for i = 1:length(patches)
             if ~isempty(patches{j})
                 [rng2,sub2] = ind2patchRng(ind(j),imSz,patchSz);
                 if ~any(abs(sub1-sub2)>1) % if the patches overlap (i.e. no subscript is off by more than one)...
-                    rng = cellfun(@(x,y) [max(x(1),y(1)) min(x(2),y(2))], rng1, rng2, 'UniformOutput', 0); % the range of the overlap
-                    ni = length(patches{i});
-                    nj = length(patches{j});
-                    Z = zeros(ni,nj);
-                    for p = 1:ni % ...then iterate over ROIs in the patch
-                        for q = 1:nj
-                            roiInd1 = ones(size(patches{i}{p},1),1); % Index of roi pixels in the overlap between patches
-                            roiInd2 = ones(size(patches{j}{q},1),1);
-                            % Filter out the pixels that aren't in the overlap between patches
-                            for k = 1:3
-                                roiInd1 = roiInd1 & patches{i}{p}(:,k) >= rng{k}(1) & patches{i}{p}(:,k) <= rng{k}(2);
-                                roiInd2 = roiInd2 & patches{j}{q}(:,k) >= rng{k}(1) & patches{j}{q}(:,k) <= rng{k}(2);
-                            end
-                            % turn the subscripts into actual lists of indices
-                            ind1 = sub2ind(imSz,patches{i}{p}(roiInd1,1),patches{i}{p}(roiInd1,2),patches{i}{p}(roiInd1,3));
-                            ind2 = sub2ind(imSz,patches{j}{q}(roiInd2,1),patches{j}{q}(roiInd2,2),patches{j}{q}(roiInd2,3));
-                            if length(intersect(ind1,ind2))/length(union(ind1,ind2)) > 0.5 % The Jaccard index between sets of indices
-                                Z(p,q) = 1;
-                            end
-                        end
-                    end
-                    toMerge(patchInd(i)+(1:ni),patchInd(j)+(1:nj)) = Z;
-                    toMerge(patchInd(j)+(1:nj),patchInd(i)+(1:ni)) = Z';
+                    Z = mergeROIs(patches{i},patches{j},rng1,rng2,imSz);
+                    toMerge(patchInd(i)+(1:size(Z,1)),patchInd(j)+(1:size(Z,2))) = Z;
+                    toMerge(patchInd(j)+(1:size(Z,2)),patchInd(i)+(1:size(Z,1))) = Z';
                 end
             end
         end
