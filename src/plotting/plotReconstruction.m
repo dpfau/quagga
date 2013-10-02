@@ -8,53 +8,64 @@ end
 
 T = size(data,ndims(data));
 spatialMatrix = roi2matrix(ROI,imSz(1:3));
-% mask = zeros(imSz(1:2));
-% for i = 1:size(spatialMatrix,2)
-% 	edges = edge(reshape(spatialMatrix((z-1)*(imSz(1)*imSz(2))+(1:imSz(1)*imSz(2)),i),imSz(1),imSz(2)),'Canny');
-% 	mask(edges==1)=1;
-% end
 
 spatialMatrix = [spatialMatrix, reshape(mean(data,ndims(data)),prod(imSz(1:3)),1)]; % Add mean image
 temporalMatrix = pinv(spatialMatrix)*reshape(data,prod(imSz(1:3)),T);
 reconstruction = spatialMatrix*temporalMatrix;
 residual = reshape(data,prod(imSz(1:3)),T) - reconstruction;
 
-vidObj = VideoWriter(filename);
-vidObj.Quality = 100;
-vidObj.FrameRate = 24;
-open(vidObj);
-
 data           = reshape(data,imSz);
 reconstruction = reshape(reconstruction,imSz);
 residual       = reshape(residual,imSz);
 
-
 figure;
-set(gcf,'Position',[1 420 1440 380])
+set(gcf,'Position',[1 1 764 764])
 colormap gray
-subplot(1,3,1) % original data
-% h1 = image(showmask(data(:,:,z,1),mask,false,min(data(:)),max(data(:))));
-h1 = imagesc(data(:,:,z,1),[min(data(:)),max(data(:))]);
-axis image
+h = imagesc(data(:,:,z,1),[min(data(:)),max(data(:))]);
+axis image; hold on
+cols = jet(size(spatialMatrix,2)-1);
+cols = cols(randperm(size(spatialMatrix,2)-1),:);
 
-subplot(1,3,2) % reconstruction
-% h2 = image(showmask(reconstruction(:,:,z,1),mask,false,min(reconstruction(:)),max(reconstruction(:))));
-h2 = imagesc(reconstruction(:,:,z,1),[min(reconstruction(:)),max(reconstruction(:))]);
-axis image
+for i = 1:size(spatialMatrix,2)-1
+	roiImg = reshape(spatialMatrix(:,i),imSz(1:3));
+	if any(vec(roiImg(:,:,z)))
+		B = bwboundaries(roiImg(:,:,z)~=0,'noholes');
+		assert(length(B)==1) % from the way ROIs are constructed, should never be multiple connected components
+		line([B{1}(:,2)'; B{1}(2:end,2)', B{1}(1,2)],[B{1}(:,1)'; B{1}(2:end,1)', B{1}(1,1)],'Color',cols(i,:),'LineWidth',1);
+	end
+end
 
-subplot(1,3,3) % residual
-% h3 = image(showmask(residual(:,:,z,1),mask,false,min(residual(:)),max(residual(:))));
-h3 = imagesc(residual(:,:,z,1),[min(residual(:)),max(residual(:))]);
-axis image
+% vidObjData = VideoWriter([filename '_data.avi']);
+% vidObjData.Quality = 100;
+% vidObjData.FrameRate = 24;
+% open(vidObjData);
+% for i = 1:T
+% 	fprintf('Writing frame %d of %d\n',i,T);
+%     set(h,'CData',data(:,:,z,i));
+%     writeVideo(vidObjData, getframe(gcf));
+% end
+% close(vidObjData);
 
+vidObjRecon = VideoWriter([filename '_reconstruction.avi']);
+vidObjRecon.Quality = 100;
+vidObjRecon.FrameRate = 24;
+open(vidObjRecon);
+set(gca,'CLim',[min(reconstruction(:)),max(reconstruction(:))])
 for i = 1:T
 	fprintf('Writing frame %d of %d\n',i,T);
-% 	set(h1,'CData',showmask(data(:,:,z,i),mask,false,min(data(:)),max(data(:))))
-% 	set(h2,'CData',showmask(reconstruction(:,:,z,i),mask,false,min(reconstruction(:)),max(reconstruction(:))))
-% 	set(h3,'CData',showmask(residual(:,:,z,i),mask,false,min(residual(:)),max(residual(:))))
-    set(h1,'CData',data(:,:,z,i));
-    set(h2,'CData',reconstruction(:,:,z,i));
-    set(h3,'CData',residual(:,:,z,i));
-    writeVideo(vidObj, getframe(gcf));
+    set(h,'CData',reconstruction(:,:,z,i));
+    writeVideo(vidObjRecon, getframe(gcf));
 end
-close(vidObj);
+close(vidObjRecon);
+
+vidObjResid = VideoWriter([filename '_residual.avi']);
+vidObjResid.Quality = 100;
+vidObjResid.FrameRate = 24;
+open(vidObjResid);
+set(gca,'CLim',[min(residual(:)),max(residual(:))])
+for i = 1:T
+	fprintf('Writing frame %d of %d\n',i,T);
+    set(h,'CData',residual(:,:,z,i));
+    writeVideo(vidObjResid, getframe(gcf));
+end
+close(vidObjResid);

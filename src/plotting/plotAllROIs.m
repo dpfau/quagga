@@ -19,7 +19,7 @@ roiMat = roi2matrix(ROI,roiSz);
 cols = jet(roiLen);
 cols = cols(randperm(roiLen),:);
 clf
-imagesc(img(:,:,z)');
+imagesc(img(:,:,z));
 colormap gray
 axis image
 hold on
@@ -28,7 +28,7 @@ for i = 1:roiLen
 	if any(vec(roiImg(:,:,z)))
 		B = bwboundaries(roiImg(:,:,z)~=0,'noholes');
 		assert(length(B)==1) % from the way ROIs are constructed, should never be multiple connected components
-		line([B{1}(:,1)'; B{1}(2:end,1)', B{1}(1,1)],[B{1}(:,2)'; B{1}(2:end,2)', B{1}(1,2)],'Color',cols(i,:),'LineWidth',1);
-		text(mean(B{1}(:,1)),mean(B{1}(:,2)),num2str(i),'Color','g','FontSize',10);
+		line([B{1}(:,2)'; B{1}(2:end,2)', B{1}(1,2)],[B{1}(:,1)'; B{1}(2:end,1)', B{1}(1,1)],'Color',cols(i,:),'LineWidth',1);
+		text(mean(B{1}(:,2)),mean(B{1}(:,1)),num2str(i),'Color','g','FontSize',10);
 	end
 end

@@ -16,6 +16,7 @@ patch = zeros([cellfun(@(x)diff(x)+1,xyzRng),sum(imlen)]);
 idx = cumsum([0; imlen]);
 for i = 1:length(fileRange)
     for j = 1:imlen(i)
+    	keyboard
         patch(:,:,idx(i)+j) = imread(filename{i},'Index',j,'PixelRegion',xyzRng(1:2));
     end
 end
