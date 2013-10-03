@@ -20,7 +20,7 @@ patchInd = [0; cumsum(cellfun(@length,patches(:)))];
 toMerge = sparse(patchInd(end),patchInd(end));
 
 for i = 1:length(patches)
-    disp(num2str(i))
+    % disp(num2str(i))
     if ~isempty(patches{i})
         [rng1,sub1] = ind2patchRng(ind(i),imSz,patchSz);
         for j = i+1:length(patches) % iterate over patches

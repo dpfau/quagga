@@ -21,7 +21,7 @@ maxPix = patchSz(1)*patchSz(2)*0.75; % might want to tweak this
 overlap = 0.5;
 
 % Maximum surface area to volume ratio, a measure of how compact an ROI is
-minSA2Vol = 2;
+minSA2Vol = 0;%2;
 
 %% Threshold pixels and find connected components
 

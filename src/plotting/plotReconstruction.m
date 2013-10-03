@@ -35,16 +35,16 @@ for i = 1:size(spatialMatrix,2)-1
 	end
 end
 
-% vidObjData = VideoWriter([filename '_data.avi']);
-% vidObjData.Quality = 100;
-% vidObjData.FrameRate = 24;
-% open(vidObjData);
-% for i = 1:T
-% 	fprintf('Writing frame %d of %d\n',i,T);
-%     set(h,'CData',data(:,:,z,i));
-%     writeVideo(vidObjData, getframe(gcf));
-% end
-% close(vidObjData);
+vidObjData = VideoWriter([filename '_data.avi']);
+vidObjData.Quality = 100;
+vidObjData.FrameRate = 24;
+open(vidObjData);
+for i = 1:T
+	fprintf('Writing frame %d of %d\n',i,T);
+    set(h,'CData',data(:,:,z,i));
+    writeVideo(vidObjData, getframe(gcf));
+end
+close(vidObjData);
 
 vidObjRecon = VideoWriter([filename '_reconstruction.avi']);
 vidObjRecon.Quality = 100;
