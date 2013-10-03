@@ -18,24 +18,21 @@ else
         % occasionally when running this on a cluster, we have to pass things around by saving them
         % and having individual nodes loading them. This would be so much easier on Hadoop or Spark.
         load(config)
-    elseif isstruct(config)
-        imSz = config.imSz;
-        neuronSz = config.neuronSz;
-        if isfield(config,'patchSz')
-            patchSz = config.patchSz;
-        else
-            patchSz = 2*config.neuronSz;
-            if imSz(3) == 1
-                patchSz(3) = 1;
-            end
-        end
-        savePath = config.savePath;
-        loader = config.patchLoader;
-        stdThresh = config.stdThresh;
-        stdPrctile = config.stdPrctile;
-    else
-        error('Second argument must either be a config struct or the file name of a saved config struct')
     end
+    imSz = config.imSz;
+    neuronSz = config.neuronSz;
+    if isfield(config,'patchSz')
+        patchSz = config.patchSz;
+    else
+        patchSz = 2*config.neuronSz;
+        if imSz(3) == 1
+            patchSz(3) = 1;
+        end
+    end
+    savePath = config.savePath;
+    loader = config.patchLoader;
+    stdThresh = config.stdThresh;
+    stdPrctile = config.stdPrctile;
 end
         
 
