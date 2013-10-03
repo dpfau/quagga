@@ -21,7 +21,7 @@ maxPix = patchSz(1)*patchSz(2)*0.75; % might want to tweak this
 overlap = 0.5;
 
 % Maximum surface area to volume ratio, a measure of how compact an ROI is
-minSA2Vol = 0;%2;
+maxSA2Vol = Inf;%2;
 
 %% Threshold pixels and find connected components
 
@@ -51,7 +51,7 @@ end
 %% Merge overlapping connected components recursively until convergence
 ROI = connectComponents(ROI,overlap);
 %% Filter out anything with too high a surface area to volume ratio
-goodIdx = cellfun(@(x) SA2Vol(x) < minSA2Vol, ROI);
+goodIdx = cellfun(@(x) SA2Vol(x) < maxSA2Vol, ROI);
 junk = [junk ROI(~goodIdx)];
 ROI = ROI(goodIdx);
 
