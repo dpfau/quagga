@@ -9,7 +9,7 @@ function globalROI = local2global(localROI,imSz,patchRng)
 % globalROI - cell array of ROI values in global coordinates
 
 for i = 1:3
-	   assert(size(localROI,i)==(diff(patchRng{i})+1))
+	assert(size(localROI,i)==(diff(patchRng{i})+1),['Why is one of these ' num2str(size(localROI,i)) ' and the other ' (diff(patchRng{i}+1)+1) '?'])
 end
 
 globalROI = cell(imSz(3),1);
