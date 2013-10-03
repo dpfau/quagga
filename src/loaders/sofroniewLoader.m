@@ -23,4 +23,4 @@ end
 % The combined arrayfun and cellfun is a horrible hack because MATLAB doesn't let you
 % mix double arrays and cell arrays when using cellfun/arrayfun. There's probably a
 % better way...
-patch = padarray(patch,cellfun(@(x,y) y-(diff(x)+1),xyzRng,arrayfun(@(x)x,patchSz,'UniformOutput',0)),'post');
+% patch = padarray(patch,cellfun(@(x,y) y-(diff(x)+1),xyzRng,arrayfun(@(x)x,patchSz,'UniformOutput',0)),'post');

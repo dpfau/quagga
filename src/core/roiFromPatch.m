@@ -45,24 +45,25 @@ sparseWeight = 0.3; % weight on the sparse penalty for patch
 
 % Load patch from data file
 [patch,patchRng] = loadPatch(ind,imSz,patchSz,loader);
+truePatchSz = cellfun(@(x) diff(x)+1, patchRng); % If the patch goes over the edge of the image, this is the actual patch size
 
-patch = reshape(patch,prod(patchSz),imSz(end));
+patch = reshape(patch,prod(truePatchSz),imSz(end));
 if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there is more than noise in this patch
 	% Run sparse PCA on data in patch
     tic
-	patch = bsxfun(@minus,patch,mean(patch,2));
+	% patch = bsxfun(@minus,patch,mean(patch,2)); % sparsePCA has subtraction already. This should be redundant.
 	[W,H] = sparsePCA(patch,sparseWeight,numPC,false); % don't clutter the terminal with objective values
 	% Split ROI in the same sparse PC that aren't connected, and merge ROI that are
 	% in different sparse PCs but significantly overlap in space. This is all within
 	% one patch. This will be followed by a step that merges ROIs across different
 	% patches
 	if debug
-		[ROI, junk] = segregateComponents(reshape(W,[patchSz,numPC]),patchSz,neuronSz);
+		[ROI, junk] = segregateComponents(reshape(W,[truePatchSz,numPC]),truePatchSz,neuronSz);
 		ROI  = cellfun(@(x) local2global(x,imSz(1:3),patchRng), ROI,  'UniformOutput', 0);
 		junk = cellfun(@(x) local2global(x,imSz(1:3),patchRng), junk, 'UniformOutput', 0);
 	else
 		ROI = cellfun(@(x) local2global(x,imSz(1:3),patchRng),...
-	          	     segregateComponents(reshape(W,[patchSz,numPC]),patchSz,neuronSz),...
+	          	     segregateComponents(reshape(W,[truePatchSz,numPC]),truePatchSz,neuronSz),...
 	           	     'UniformOutput', 0);
     end
     
