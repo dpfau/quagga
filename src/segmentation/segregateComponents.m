@@ -13,7 +13,7 @@ function [ROI, junk] = segregateComponents(spatialPC,patchSz,neuronSz)
 thresh = 0.01;
 
 % If a connected component has pixels outside this range, throw it out.
-minPix = prod(neuronSz)/3;
+minPix = 5;%prod(neuronSz)/3;
 maxPix = patchSz(1)*patchSz(2)*0.75; % might want to tweak this
 
 % Fraction of one component that must be overlapping another to be
@@ -21,7 +21,7 @@ maxPix = patchSz(1)*patchSz(2)*0.75; % might want to tweak this
 overlap = 0.5;
 
 % Maximum surface area to volume ratio, a measure of how compact an ROI is
-maxSA2Vol = Inf;%2;
+maxSA2Vol = 2;
 
 %% Threshold pixels and find connected components
 
