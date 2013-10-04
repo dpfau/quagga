@@ -4,9 +4,9 @@ imlen = 0;
 imheight = 512;
 imwidth = 512; % default, but we check anyway
 for i = 1:length(files)
-	if ~isempty(strfind(files(i).name,'.tif'))
+	if ~isempty(strfind(lower(files(i).name),'.tif'))
 		info = imfinfo(fullfile(dataPath,dataset,files(i).name));
-		imlen = imlen + length(info)
+		imlen = imlen + length(info);
 		imheight = info(1).Height;
 		imwidth = info(1).Width;
 	end
