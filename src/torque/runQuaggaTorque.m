@@ -23,7 +23,7 @@ nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
 patchExpr = fullfile(resultPath,dataset,'patch_*.mat');
 system(sprintf('rm %s',patchExpr)); % remove results of previous run
 system(sprintf('rm %s',fullfile(logPath,'*'))); % remove logs from previous run
-system(sprintf('qsub roiFromPatch.sh -t 1-%d -v config_path=%s',nPatches,configPath)); % send new run to the cluster
+system(sprintf('qsub %s -t 1-%d -v config_path=%s',fullfile(quaggaPath,'src','torque','roiFromPatch.sh'),nPatches,configPath)); % send new run to the cluster
 
 %% Ping the cluster once every 10 seconds until all patches have finished running
 fprintf('Jobs submitted to cluster...\n')
