@@ -3,7 +3,7 @@ function patch = tiffLoader(patchSz,xyzRng,tRng,dataPath,prefix)
 files = dir(dataPath);
 imgs = {};
 for i = 1:length(files)
-	if ~isempty(strfind(files(i).name,'.tif'))
+	if ~isempty(strfind(lower(files(i).name),'.tif'))
 		if nargin < 5 || ~isempty(strfind(files(i).name,prefix))
 			info = imfinfo(fullfile(dataPath,files(i).name));
 			img = zeros([cellfun(@(x)diff(x)+1,xyzRng),length(info)]);
