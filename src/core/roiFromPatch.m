@@ -47,6 +47,9 @@ sparseWeight = 0.3; % weight on the sparse penalty for patch
 [patch,patchRng] = loadPatch(ind,imSz,patchSz,loader);
 truePatchSz = cellfun(@(x) diff(x)+1, patchRng); % If the patch goes over the edge of the image, this is the actual patch size
 
+size(patch)
+truePatchSz
+imSz(end)
 patch = reshape(patch,prod(truePatchSz),imSz(end));
 if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there is more than noise in this patch
 	% Run sparse PCA on data in patch
