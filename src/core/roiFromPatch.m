@@ -55,7 +55,7 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
     tic
 	% patch = bsxfun(@minus,patch,mean(patch,2)); % sparsePCA has subtraction already. This should be redundant.
     if dff
-        patch = bsxfun(@(x,y) (x-y)/y, patch, mean(patch,2));
+        patch = bsxfun(@(x,y) (x-y)./y, patch, mean(patch,2));
     end
 	[W,H] = sparsePCA(patch,sparseWeight,numPC,false); % don't clutter the terminal with objective values
 	% Split ROI in the same sparse PC that aren't connected, and merge ROI that are
