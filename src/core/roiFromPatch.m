@@ -13,6 +13,7 @@ if nargin < 2 % default settings for Ahrens group data
     loader = @ahrensLoader;
 	stdThresh = 0.07;
 	stdPrctile = 99;
+    dff = false;
 else
     if ischar(config) 
         % occasionally when running this on a cluster, we have to pass things around by saving them
@@ -33,6 +34,7 @@ else
     loader = config.patchLoader;
     stdThresh = config.stdThresh;
     stdPrctile = config.stdPrctile;
+    dff = config.dff;
 end
         
 
@@ -52,6 +54,9 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
 	% Run sparse PCA on data in patch
     tic
 	% patch = bsxfun(@minus,patch,mean(patch,2)); % sparsePCA has subtraction already. This should be redundant.
+    if dff
+        patch = bsxfun(@(x,y) (x-y)/y, patch, mean(patch,2));
+    end
 	[W,H] = sparsePCA(patch,sparseWeight,numPC,false); % don't clutter the terminal with objective values
 	% Split ROI in the same sparse PC that aren't connected, and merge ROI that are
 	% in different sparse PCs but significantly overlap in space. This is all within

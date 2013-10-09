@@ -12,5 +12,6 @@ config.patchSz = [64,64,1];
 config.patchLoader = @(x,y,z) tiffLoader(x,y,z,fullfile(dataPath,dataset));
 config.stdThresh = 0; % Just let everything through
 config.stdPrctile = 50; % So long as stdThresh is zero, this doesn't matter
+config.dff = true; % flag to indicate whether or not to compute df/f on a patch
 
 runQuaggaTorque
