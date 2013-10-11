@@ -6,7 +6,7 @@ switch numel(patchNum)
 	case 1% If we pass a single number, it's an index.
 		xyzRng = ind2patchRng(patchNum,imSz(1:end-1),patchSz);
 	case numel(patchSz)
-		xyzRng = arrayfun(@(x,y,z) [x,min(z,x+y-1)],patchNum,patchSz,imSz,'UniformOutput',0);
+		xyzRng = arrayfun(@(x,y,z) [x,min(z,x+y-1)],patchNum,patchSz,imSz(1:3),'UniformOutput',0);
 	otherwise
 		error('Patch must either be specified by index or by location vector') 
 end

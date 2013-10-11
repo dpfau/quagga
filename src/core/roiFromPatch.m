@@ -1,4 +1,4 @@
-function [ROI,junk,patch] = roiFromPatch(ind, config)
+function [ROI,junk,patch,patchRng] = roiFromPatch(ind, config)
 
 debug = true;
 if ischar(ind)

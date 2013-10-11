@@ -1,4 +1,4 @@
-function ROI = mergePatches(roiList,rngList,imSz)
+function ROI = mergePatches(patches,rngList,imSz)
 % From the output of ROI detection on individual patches, merge together
 % the results in patches specified by the range in "roiList". If a path
 % is specified, load the patches from files (useful in distributed implementations).
