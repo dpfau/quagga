@@ -22,7 +22,7 @@ figure;
 set(gcf,'Position',[1 1 764 764])
 colormap gray
 h = imagesc(data(:,:,z,1),[min(data(:)),max(data(:))]);
-axis image; hold on
+axis image; axis off; hold on
 cols = jet(size(spatialMatrix,2)-1);
 cols = cols(randperm(size(spatialMatrix,2)-1),:);
 
@@ -42,7 +42,7 @@ open(vidObjData);
 for i = 1:T
 	fprintf('Writing frame %d of %d\n',i,T);
     set(h,'CData',data(:,:,z,i));
-    writeVideo(vidObjData, getframe(gcf));
+    writeVideo(vidObjData, getframe(gca));
 end
 close(vidObjData);
 
@@ -54,7 +54,7 @@ set(gca,'CLim',[min(reconstruction(:)),max(reconstruction(:))])
 for i = 1:T
 	fprintf('Writing frame %d of %d\n',i,T);
     set(h,'CData',reconstruction(:,:,z,i));
-    writeVideo(vidObjRecon, getframe(gcf));
+    writeVideo(vidObjRecon, getframe(gca));
 end
 close(vidObjRecon);
 
@@ -66,6 +66,6 @@ set(gca,'CLim',[min(residual(:)),max(residual(:))])
 for i = 1:T
 	fprintf('Writing frame %d of %d\n',i,T);
     set(h,'CData',residual(:,:,z,i));
-    writeVideo(vidObjResid, getframe(gcf));
+    writeVideo(vidObjResid, getframe(gca));
 end
 close(vidObjResid);
