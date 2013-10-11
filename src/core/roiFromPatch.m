@@ -14,6 +14,7 @@ if nargin < 2 % default settings for Ahrens group data
 	stdThresh = 0.07;
 	stdPrctile = 99;
     dff = false;
+    saveROI = true;
 else
     if ischar(config) 
         % occasionally when running this on a cluster, we have to pass things around by saving them
@@ -35,6 +36,7 @@ else
     stdThresh = config.stdThresh;
     stdPrctile = config.stdPrctile;
     dff = config.dff;
+    saveROI = config.saveROI;
 end
         
 
@@ -72,19 +74,23 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
 	           	     'UniformOutput', 0);
     end
     
-    if debug
-        save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI', 'junk','W','H')
-    else
-        save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI')
+    if saveROI
+        if debug
+            save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI', 'junk','W','H')
+        else
+            save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI')
+        end
     end
     toc
 else
 	fprintf('not enough activity in patch\n')
 	ROI = {};
-	if debug
-		junk = {};
-        save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI', 'junk')
-    else
-        save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI')
-	end
+    if saveROI
+    	if debug
+    		junk = {};
+            save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI', 'junk')
+        else
+            save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI')
+    	end
+    end
 end

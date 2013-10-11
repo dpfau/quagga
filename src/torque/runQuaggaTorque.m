@@ -60,5 +60,5 @@ end
 toc
 system(sprintf('rm %s',configPath));
 fprintf('Merging across patches...\n')
-mergePatches(1:nPatches,config.imSz,config.patchSz,config.savePath);
+mergePatchesFromFile(1:nPatches,config.imSz,config.patchSz,config.savePath);
 fprintf('Finished!\n')
