@@ -13,13 +13,9 @@ patchInd = [0; cumsum(cellfun(@length,patches(:)))];
 toMerge = sparse(patchInd(end),patchInd(end));
 
 for i = 1:length(patches)
-    % disp(num2str(i))
     if ~isempty(patches{i})
-        % [rng1,sub1] = ind2patchRng(roiList(i),imSz,patchSz);
         for j = i+1:length(patches) % iterate over patches
             if ~isempty(patches{j})
-                % [rng2,sub2] = ind2patchRng(roiList(j),imSz,patchSz);
-                % if ~any(abs(sub1-sub2)>1) % if the patches overlap (i.e. no subscript is off by more than one)...
                 if ~any(cellfun(@(x,y) max(x(1),y(1))>min(x(2),y(2)),rngList{i},rngList{j}))
                     Z = mergeROIs(patches{i},patches{j},rngList{i},rngList{j},imSz);
                     toMerge(patchInd(i)+(1:size(Z,1)),patchInd(j)+(1:size(Z,2))) = Z;
