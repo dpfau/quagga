@@ -45,7 +45,7 @@ if patchSz(3) > 1
 else
 	numPC = 5;
 end
-sparseWeight = 0.3; % weight on the sparse penalty for patch
+sparseWeight = 0.1;%0.3; % weight on the sparse penalty for patch
 
 % Load patch from data file
 [patch,patchRng] = loadPatch(ind,imSz,patchSz,loader);
