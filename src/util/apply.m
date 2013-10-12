@@ -5,10 +5,8 @@ function x = apply(f,varargin)
 % associative (i.e. addition, multiplication, intersection, union) the
 % result will not depend on the order.
 
-disp(length(varargin))
-disp(get(0,'RecursionLimit'))
 if length(varargin) > get(0,'RecursionLimit')
-    set(0,'RecursionLimit',length(varargin));
+    set(0,'RecursionLimit',length(varargin)+10);
 end
 % It would be really cool if MATLAB could do tail recursion so this could
 % run in constant space and still be implemented recursively.
