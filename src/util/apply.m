@@ -6,6 +6,7 @@ function x = apply(f,varargin)
 % result will not depend on the order.
 
 disp(length(varargin))
+disp(get(0,'RecursionLimit'))
 if length(varargin) > get(0,'RecursionLimit')
     set(0,'RecursionLimit',length(varargin));
 end
