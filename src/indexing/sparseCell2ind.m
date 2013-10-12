@@ -6,6 +6,10 @@ function y = sparseCell2ind(x)
 % the same linear-in-the-size-of-the-smallest-dimension-in-memory
 % overhead that MATLAB's sparse array does.
 
+% Note - this function is basically deprecated, as local2global now
+% directly outputs to this format instead of going through the cell
+% array of sparse indices step.
+
 y = zeros(0,4);
 for i = 1:length(x)
 	[ii,jj,ss] = find(x{i});

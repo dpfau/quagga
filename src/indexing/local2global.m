@@ -1,6 +1,7 @@
 function globalROI = local2global(localROI,imSz,patchRng)
-% Convert a 3D array of ROI values in one patch into a cell array of sparse
-% matrices, one for each slice of the data in the Z direction.
+% Convert a 3D array of ROI values in one patch into a list of
+% nonzero indices, with (x,y,z) values along the first three
+% columns and the pixel value along the fourth.
 %
 % localROI  - array of ROI values in a patch
 % imSz      - size of full image
@@ -8,16 +9,14 @@ function globalROI = local2global(localROI,imSz,patchRng)
 %
 % globalROI - cell array of ROI values in global coordinates
 
-for i = 1:3
-	assert(size(localROI,i)==(diff(patchRng{i})+1))
-end
-
-globalROI = cell(imSz(3),1);
-for i = 1:imSz(3)
-    globalROI{i} = sparse([],[],[],imSz(1),imSz(2));
-end
-
 patchSz = size(localROI);
-for i = 1:size(localROI,3)
-    globalROI{patchRng{3}(1)+i-1}(patchRng{1}(1):patchRng{1}(2),patchRng{2}(1):patchRng{2}(2)) = localROI(:,:,i);
+for i = 1:length(patchSz)
+	assert(patchSz(i)==(diff(patchRng{i})+1))
 end
+if length(patchSz)==2
+    assert(patchRng{3}(1)==1 && patchRng{3}(2)==1);
+end
+
+idx = find(localROI);
+[x,y,z] = ind2sub(patchSz,idx);
+globalROI = [x+patchRng{1}(1)-1,y+patchRng{2}(1)-1,z+patchRng{3}(1)-1,localROI(idx)];
