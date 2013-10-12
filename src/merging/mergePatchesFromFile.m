@@ -9,11 +9,7 @@ for i = 1:length(ind)
 	roiFile = fullfile(roiPath,['patch_' num2str(ind(i)) '.mat']);
 	if exist(roiFile,'file')
 		load(roiFile);
-		if iscell(ROI) % supports a deprecated version of this code where roiFromPatch saves the output as a cell of sparse 2D arrays
-			patches{i} = cellfun(@sparseCell2ind,ROI,'UniformOutput',0);
-		else
-			patches{i} = ROI;
-		end
+		patches{i} = ROI;
 		rngList{i} = ind2patchRng(ind(i),imSz,patchSz);
 	end
 end
