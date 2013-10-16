@@ -45,7 +45,7 @@ if patchSz(3) > 1
 else
 	numPC = 5;
 end
-sparseWeight = 0.1;%0.3; % weight on the sparse penalty for patch
+sparseWeight = 0.3; % weight on the sparse penalty for patch
 
 % Load patch from data file
 [patch,patchRng] = loadPatch(ind,imSz,patchSz,loader);
@@ -57,6 +57,7 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
     tic
 	% patch = bsxfun(@minus,patch,mean(patch,2)); % sparsePCA has subtraction already. This should be redundant.
     if dff
+        fprintf('Computing df/f\n');
         patch = bsxfun(@(x,y) (x-y)./y, patch, mean(patch,2));
     end
 	[W,H] = sparsePCA(patch,sparseWeight,numPC,false); % don't clutter the terminal with objective values
