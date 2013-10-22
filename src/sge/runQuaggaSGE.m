@@ -3,7 +3,9 @@ nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
 patchExpr = fullfile(resultPath,dataset,'patch_*.mat');
 system(sprintf('rm %s',patchExpr)); % remove results of previous run
 system(sprintf('rm %s',fullfile(logPath,'*'))); % remove logs from previous run
-system(sprintf('qsub %s -t 1-%d -v config_path=%s',fullfile(quaggaPath,'src','torque','roiFromPatch.sh'),nPatches,configPath)); % send new run to the cluster
+system(sprintf('qsub -t 1-%d -pe batch 1 -N ''quagga'' -j y -o /dev/null -b y -cwd -V ''/groups/freeman/home/freemanj11/compiled/quagga/roiFromPatch ${SGE_TASK_ID} %s > /groups/freeman/freemanlab/Janelia/quagga/logs/${SGE_TASK_ID}.log''',2,configPath)); % send new run to the cluster
+
+% not tested yet...
 
 %% Ping the cluster once every 10 seconds until all patches have finished running
 fprintf('Jobs submitted to cluster...\n')
