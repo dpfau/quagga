@@ -1,6 +1,6 @@
 %% Jeremy, you change these as needed
-homePath   = '/hpc/stats/users/dbp2112/Janelia';
-dataPath   = fullfile(homePath,'data');
+homePath   = '/groups/freeman/freemanlab/Janelia/quagga';
+dataPath   = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_sharing_01/12-10-05/Dre_L1_HuCGCaMP5_0_20121005_154312.corrected.processed';
 resultPath = fullfile(homePath,'results');
 logPath    = fullfile(homePath,'logs');
 quaggaPath = fullfile(homePath,'quagga');
@@ -14,7 +14,7 @@ config.patchSz = [64,64,4];
 config.patchLoader = @ahrensLoader;
 config.stdThresh = 0.07;
 config.stdPrctile = 99;
-config.dff = false; % df/f has already been computed on this data
+config.dff = true; % df/f has already been computed on this data
 config.saveROI = true;
 config.savePath = fullfile(resultPath,dataset);
 configPath = fullfile(resultPath,dataset,'config.mat');
