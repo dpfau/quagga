@@ -1,5 +1,7 @@
 function [ROI,junk,patch,patchRng] = roiFromPatch(ind, config)
 
+% to compile: /usr/local/matlab-2010a/bin/mcc -R -singleCompThread -C -m ~/github/quagga/src/core/roiFromPatch.m -a ~/github/quagga/
+
 debug = true;
 if ischar(ind)
     ind = str2num(ind); % Sometimes has to be passed as a string because of the way arguments are passed to compiled matlab
