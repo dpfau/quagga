@@ -1,0 +1,23 @@
+%% Jeremy, you change these as needed
+homePath   = '/hpc/stats/users/dbp2112/Janelia';
+dataPath   = fullfile(homePath,'data');
+resultPath = fullfile(homePath,'results');
+logPath    = fullfile(homePath,'logs');
+quaggaPath = fullfile(homePath,'quagga');
+dataset    = 'kira';
+addpath(genpath(quaggaPath));
+
+%% These should be set correctly
+config.imSz = [1472,2048,41,1000];
+config.neuronSz = [15,15,2]; % size of the average neuron, in pixels
+config.patchSz = [64,64,4];
+config.patchLoader = @ahrensLoader;
+config.stdThresh = 0.07;
+config.stdPrctile = 99;
+config.dff = false; % df/f has already been computed on this data
+config.saveROI = true;
+config.savePath = fullfile(resultPath,dataset);
+configPath = fullfile(resultPath,dataset,'config.mat');
+save(configPath,'config'); % save the config struct so that it can be loaded by nodes on the cluster
+
+runQuaggaSGE
