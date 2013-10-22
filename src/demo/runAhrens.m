@@ -4,7 +4,7 @@ dataPath   = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_
 resultPath = fullfile(homePath,'results');
 logPath    = fullfile(homePath,'logs');
 quaggaPath = fullfile(homePath,'quagga');
-dataset    = 'kira';
+dataset    = 'spontaneous';
 addpath(genpath(quaggaPath));
 
 %% These should be set correctly
@@ -14,7 +14,7 @@ config.patchSz = [64,64,4];
 config.patchLoader = @ahrensLoader;
 config.stdThresh = 0.07;
 config.stdPrctile = 99;
-config.dff = true; % df/f has already been computed on this data
+config.dff = false; % df/f has already been computed on this data
 config.saveROI = true;
 config.savePath = fullfile(resultPath,dataset);
 configPath = fullfile(resultPath,dataset,'config.mat');
