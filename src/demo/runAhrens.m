@@ -18,6 +18,9 @@ config.dff = false; % df/f has already been computed on this data
 config.saveROI = true;
 config.savePath = fullfile(resultPath,dataset);
 config.slice = 20;
+if config.slice
+	config.inds = getPatchSlice([0 0 config.slice],config.imSz(1:end-1),config.patchSz);
+end
 configPath = fullfile(resultPath,dataset,'config.mat');
 save(configPath,'config'); % save the config struct so that it can be loaded by nodes on the cluster
 

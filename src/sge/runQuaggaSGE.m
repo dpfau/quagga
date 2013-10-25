@@ -1,6 +1,5 @@
 %% Iterate over patches and send everything to the cluster
-if config.slice
-	config.inds = getPatchSlice([0 0 config.slice],config.imSz(1:end-1),config.patchSz);
+if isfield(config,'inds');	
 	nPatches = length(config.inds);
 else
 	nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
