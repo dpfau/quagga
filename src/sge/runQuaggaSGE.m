@@ -1,9 +1,14 @@
 %% Iterate over patches and send everything to the cluster
-nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
+if config.slice
+	config.inds = getPatchSlice([0 0 config.slice],config.imSz(1:end-1),config.patchSz);
+	nPatches = length(config.inds);
+else
+	nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
+end
 patchExpr = fullfile(resultPath,dataset,'patch_*.mat');
 system(sprintf('rm %s',patchExpr)); % remove results of previous run
 system(sprintf('rm %s',fullfile(logPath,'*'))); % remove logs from previous run
-system(sprintf('qsub -t 1-%d -pe batch 1 -N ''quagga'' -j y -o /dev/null -b y -cwd -V ''/groups/freeman/home/freemanj11/compiled/quagga/roiFromPatch ${SGE_TASK_ID} %s > /groups/freeman/freemanlab/Janelia/quagga/logs/${SGE_TASK_ID}.log''',2,configPath)); % send new run to the cluster
+system(sprintf('qsub -t 1-%d -pe batch 1 -N ''quagga'' -j y -o /dev/null -b y -cwd -V ''/groups/freeman/home/freemanj11/compiled/quagga/roiFromPatch ${SGE_TASK_ID} %s > /groups/freeman/freemanlab/Janelia/quagga/logs/${SGE_TASK_ID}.log''',nPatches,configPath)); % send new run to the cluster
 
 % not tested yet...
 
