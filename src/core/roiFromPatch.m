@@ -40,7 +40,10 @@ else
     dff = config.dff;
     saveROI = config.saveROI;
 end
-        
+
+if isfield(config,'inds')
+    ind = config.inds(ind); % reindex if we're working with a subset of patches
+end
 
 if patchSz(3) > 1
 	numPC = 15; % number of sparse PCs to look at in patch
