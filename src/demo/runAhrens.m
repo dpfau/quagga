@@ -17,6 +17,7 @@ config.stdPrctile = 99;
 config.dff = false; % df/f has already been computed on this data
 config.saveROI = true;
 config.savePath = fullfile(resultPath,dataset);
+config.slice = 20;
 configPath = fullfile(resultPath,dataset,'config.mat');
 save(configPath,'config'); % save the config struct so that it can be loaded by nodes on the cluster
 
