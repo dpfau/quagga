@@ -6,6 +6,7 @@
 #include <float.h>
 #include <sys/time.h>
 #include <math.h>
+#include <string.h>
 #include "lsqr.h"
 #include "tiffio.h"
 
@@ -199,7 +200,7 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 		double eps_rel = 1e-3;
 
 		double r_p = DBL_MAX;
-		double r_d = DBL_MAX:
+		double r_d = DBL_MAX;
 		double e_p = 0.0;
 		double e_d = 0.0;
 
@@ -218,33 +219,30 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 			double * uu = Malloc(p->nroi*nsv,double);
 			double * ss = Malloc(nsv,double);
 			double * vv = Malloc(np*nsv,double);
-		}
 
-		while(itn < itnlim && (r_p > e_p || r_d > e_d)) {
-			itn++;
-			memcpy(ycpy, y, m*sizeof(double));
-			if (lambda == 0.0) { // no nuclear norm penalty
+			while(itn < itnlim && (r_p > e_p || r_d > e_d)) {
+				itn++;
+				memcpy(ycpy, y, m*sizeof(double));
 
-			} else if (gamma == 0.0) { // no sparsity penalty
 				aprod(1, m, n, scale(plus(z_, u, 1.0, n), -1.0, n), ycpy, p); // z_ -> u - z_ and ycpy -> y + aprod(u-z_)
 				plus(roilsqr(x, ycpy, v, w, rho/2, p, 0), z_, -1.0, n); // x update
+				
 				plus(u,x,1.0,n); // store u + x in u for the moment
 				svt(p->nroi, np, u, z_, uu, ss, vv, lambda/rho); // z -> svt_{lambda/rho}(u+x)
+				
 				plus(u,z_,-1.0,n); // u -> u + x - z
 
 				r_p = eucdist(x,z_,n);
-				r_d = sqrt(normsq(plus(z,z_,-1.0,n),n))
+				r_d = sqrt(normsq(plus(z,z_,-1.0,n),n));
 				e_p = eps_abs*sqrt(n) + 0.5*eps_rel*(sqrt(normsq(z,n))+sqrt(normsq(x,n)));
 				e_d = eps_abs*sqrt(n) + eps_rel*sqrt(normsq(u,n));
 
 				memcpy(z, z_, n*sizeof(double)); // copy contents of z_ into z
-			} else {
 
 			}
-		}
 
-		free(ycpy);
-		if (lambda != 0.0) {
+			free(ycpy);
+
 			free(z);
 			free(z_);
 			free(u);
