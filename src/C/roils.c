@@ -83,10 +83,6 @@ void roilsqr(double x[], double y[], double damp, params *p, int show) {
 	// Declare necessary variables for lsqr
     double v[n];
     double w[n];
-	double atol = 1e-9;
-	double btol = 1e-9;
-	double conlim = 1e8;
-	int    itnlim = 1000;
 	// The remaining variables are output only.
 	int    istop_out;
 	int    itn_out;
@@ -96,8 +92,13 @@ void roilsqr(double x[], double y[], double damp, params *p, int show) {
 	double arnorm_out;
 	double xnorm_out;
 
-	lsqr(m, n, &aprod, damp, (void *)p, y, v, w, x, NULL, atol, btol, conlim, itnlim, nout,
+	lsqr(m, n, &aprod, damp, (void *)p, y, v, w, x, NULL, 1e-9, 1e-9, 1e8, 1000, nout,
 		&istop_out, &itn_out, &anorm_out, &acond_out, &rnorm_out, &arnorm_out, &xnorm_out);
+}
+
+void roiadmm(double x[], double y[], params *p, double lambda, double gamma) {
+// This will be full ADMM for doing joint nuclear norm (and possibly l_1)
+// minimization for fitting shape of ROIs.
 }
 
 int main(int argc, char* argv[]) {
