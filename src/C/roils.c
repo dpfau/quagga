@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <float.h>
 #include <sys/time.h>
 #include "lsqr.h"
 #include "tiffio.h"
@@ -24,6 +25,13 @@ typedef struct {
 	double *v; // time course of each ROI, len = nroi*T, time first, roi index second
 } params;
 
+void plus(double x[], double y[], double c, int n) {
+// x = x + c*y
+	int i;
+	for (i = 0; i < n; i++) {
+		x[i] += c*y[i];
+	}
+}
 
 void aprod(int mode, int m, int n, double x[], double y[], void *UsrWrk) {
 // aprod - linear operator passed to lsqr
@@ -138,8 +146,7 @@ void roilsqr(double x[], double y[], double v[], double w[], double damp, params
 }
 
 void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int show) {
-// This will be full ADMM for doing joint nuclear norm (and possibly l_1)
-// minimization for fitting shape of ROIs.
+// finds argmin_x 1/2||aprod(x)-y||^2 + lambda*||x||_* + gamma||x||_1 via ADMM
 
 	int m = p->T;
 	int i;
@@ -147,23 +154,71 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 		m *= p->isize[i];
 	}
 
-	int n = p->nroi;
+	int np = 1; // Number of pixels in a patch
 	for (i = 0; i < p->ndims; i++) {
-		n *= p->psize[i];
+		np *= p->psize[i];
 	}
+	int n = p->nroi*np;
 
 	// Declare necessary variables for lsqr
-    double v[n];
-    double w[n];
+    double * v = Malloc(n,double);
+    double * w = Malloc(n,double);
 
     if (lambda == 0.0 && gamma == 0.0) { // just do least squares
     	roilsqr(x,y,v,w,0.0,p,show);
 	} else {
+		double rho = 1.3; // Dual learning rate
+
 		double eps_abs = 1e-3;
 		double eps_rel = 1e-3;
-		double itnlim = 100;
+
+		double r_p = DBL_MAX;
+		double r_d = DBL_MAX:
+		double e_p = 0.0;
+		double e_d = 0.0;
+
+		int itnlim = 100;
 		int itn = 0;
-		while(itn < itnlim) {
+
+		if (lambda != 0.0) {
+			double * z = Malloc(n,double); // Auxiliary variable
+			double * u = Malloc(n,double); // Lagrange multiplier (scaled form)
+
+			// allocate space for implementing SVT
+			int nsv = p->nroi<np?p->nroi:np; // number of singular values = min(number of ROIs, number of pixels in a patch)
+			double * uu = Malloc(p->nroi*nsv,double);
+			double * ss = Malloc(nsv,double);
+			double * vv = Malloc(np*nsv,double);
+		}
+
+		while(itn < itnlim && (r_p > e_p || r_d > e_d)) {
+			itn++;
+			if (lambda == 0.0) { // no nuclear norm penalty
+
+			} else if (gamma == 0.0) { // no sparsity penalty
+				roilsqr(); // x update
+				plus(u,x,1.0,n); // store u + x in u for the moment
+				svt(p->nroi, np, u, z, uu, ss, vv, lambda/rho); // z -> svt_{lambda/rho}(u+x)
+				plus(u,z,-1.0,n); // u -> u + x - z
+
+				r_p = 
+				r_d = 
+				e_p = 
+				e_d = 
+			} else {
+
+			}
+		}
+
+		free(v);
+		free(w);
+		if (lambda != 0.0) {
+			free(z);
+			free(u);
+
+			free(uu);
+			free(ss);
+			free(vv);
 		}
 	}
 }
