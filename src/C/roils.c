@@ -5,6 +5,7 @@
 #include <time.h>
 #include <float.h>
 #include <sys/time.h>
+#include <math.h>
 #include "lsqr.h"
 #include "tiffio.h"
 
@@ -25,12 +26,36 @@ typedef struct {
 	double *v; // time course of each ROI, len = nroi*T, time first, roi index second
 } params;
 
-void plus(double x[], double y[], double c, int n) {
+double * plus(double x[], const double y[], const double c, const int n) {
 // x = x + c*y
 	int i;
 	for (i = 0; i < n; i++) {
 		x[i] += c*y[i];
 	}
+	return x;
+}
+
+double * scale(double x[], const double c, const int n) {
+	int i;
+	for (i = 0; i < n; i++) {
+		x[i] *= c;
+	}
+	return x;
+}
+
+double normsq(const double x[], const int n) {
+	double y = 0.0;
+	int i;
+	for (i = 0; i < n; i++) y += x[i]*x[i];
+}
+
+double eucdist(const double x[], const double y[], int n) {
+	double d = 0.0;
+	int i;
+	for (i = 0; i < n; i++) {
+		d += (x[i] - y[i])*(x[i] - y[i]);
+	}
+	return sqrt(d);
 }
 
 void aprod(int mode, int m, int n, double x[], double y[], void *UsrWrk) {
@@ -74,7 +99,7 @@ void aprod(int mode, int m, int n, double x[], double y[], void *UsrWrk) {
 	}
 }
 
-void svt(int m, int n, double A[], double B[], double U[], double s[], double Vt[], double t) {
+void svt(int m, int n, const double A[], double B[], double U[], double s[], double Vt[], double t) {
 // Singular value thresholding operator applied to mxn matrix A, with the result written to B
 // U, s, Vt hold the values of the SVD, and t is the amount to threshold.
 
@@ -87,13 +112,13 @@ void svt(int m, int n, double A[], double B[], double U[], double s[], double Vt
     int lwork = -1;
     int *iwork = malloc(8*p);
     int info = 0;
-	dgesdd_("S",&m,&n,A,&m,s,U,&m,Vt,&p,work,&lwork,iwork,&info);
+	dgesdd_("S", &m, &n, A, &m, s, U, &m, Vt, &p, work, &lwork, iwork, &info);
 	if (info) exit(SVD_ERROR);
 	lwork = workSize;
 	work = malloc(lwork * sizeof *work);
 
 	// Call SVD
-	dgesdd_("S",&m,&n,A,&m,s,U,&m,Vt,&p,work,&lwork,iwork,&info);
+	dgesdd_("S", &m, &n, A, &m, s, U, &m, Vt, &p, work, &lwork, iwork, &info);
 	if (info) exit(SVD_ERROR);
 
 	// Threshold singular values
@@ -113,7 +138,7 @@ void svt(int m, int n, double A[], double B[], double U[], double s[], double Vt
 	free(iwork);
 }
 
-void roilsqr(double x[], double y[], double v[], double w[], double damp, params *p, int show) {
+double * roilsqr(double x[], double y[], double v[], double w[], double damp, params *p, int show) {
 	int m = p->T;
 	int i;
 	for (i = 0; i < p->ndims; i++) {
@@ -143,6 +168,7 @@ void roilsqr(double x[], double y[], double v[], double w[], double damp, params
 
 	lsqr(m, n, &aprod, damp, (void *)p, y, v, w, x, NULL, 1e-9, 1e-9, 1e8, 10, nout,
 		&istop_out, &itn_out, &anorm_out, &acond_out, &rnorm_out, &arnorm_out, &xnorm_out);
+	return x;
 }
 
 void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int show) {
@@ -165,7 +191,7 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
     double * w = Malloc(n,double);
 
     if (lambda == 0.0 && gamma == 0.0) { // just do least squares
-    	roilsqr(x,y,v,w,0.0,p,show);
+    	roilsqr(x, y, v, w, 0.0, p, show); // warning: this changes the value of y
 	} else {
 		double rho = 1.3; // Dual learning rate
 
@@ -180,9 +206,12 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 		int itnlim = 100;
 		int itn = 0;
 
+		double * ycpy = Malloc(m,double); // because roilsqr changes y, create a copy of it upfront and rewrite it at each iteration
+
 		if (lambda != 0.0) {
-			double * z = Malloc(n,double); // Auxiliary variable
-			double * u = Malloc(n,double); // Lagrange multiplier (scaled form)
+			double * z  = Calloc(n,double); // Auxiliary variable
+			double * z_ = Calloc(n,double); // Keep the aux variable from the last step around for computing the stopping criterion
+			double * u  = Calloc(n,double); // Lagrange multiplier (scaled form)
 
 			// allocate space for implementing SVT
 			int nsv = p->nroi<np?p->nroi:np; // number of singular values = min(number of ROIs, number of pixels in a patch)
@@ -193,27 +222,31 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 
 		while(itn < itnlim && (r_p > e_p || r_d > e_d)) {
 			itn++;
+			memcpy(ycpy, y, m*sizeof(double));
 			if (lambda == 0.0) { // no nuclear norm penalty
 
 			} else if (gamma == 0.0) { // no sparsity penalty
-				roilsqr(); // x update
+				aprod(1, m, n, scale(plus(z_, u, 1.0, n), -1.0, n), ycpy, p); // z_ -> u - z_ and ycpy -> y + aprod(u-z_)
+				plus(roilsqr(x, ycpy, v, w, rho/2, p, 0), z_, -1.0, n); // x update
 				plus(u,x,1.0,n); // store u + x in u for the moment
-				svt(p->nroi, np, u, z, uu, ss, vv, lambda/rho); // z -> svt_{lambda/rho}(u+x)
-				plus(u,z,-1.0,n); // u -> u + x - z
+				svt(p->nroi, np, u, z_, uu, ss, vv, lambda/rho); // z -> svt_{lambda/rho}(u+x)
+				plus(u,z_,-1.0,n); // u -> u + x - z
 
-				r_p = 
-				r_d = 
-				e_p = 
-				e_d = 
+				r_p = eucdist(x,z_,n);
+				r_d = sqrt(normsq(plus(z,z_,-1.0,n),n))
+				e_p = eps_abs*sqrt(n) + 0.5*eps_rel*(sqrt(normsq(z,n))+sqrt(normsq(x,n)));
+				e_d = eps_abs*sqrt(n) + eps_rel*sqrt(normsq(u,n));
+
+				memcpy(z, z_, n*sizeof(double)); // copy contents of z_ into z
 			} else {
 
 			}
 		}
 
-		free(v);
-		free(w);
+		free(ycpy);
 		if (lambda != 0.0) {
 			free(z);
+			free(z_);
 			free(u);
 
 			free(uu);
@@ -221,6 +254,9 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 			free(vv);
 		}
 	}
+
+	free(v);
+	free(w);
 }
 
 void testlsqr() {
