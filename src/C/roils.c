@@ -233,7 +233,7 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 				itn++;
 				memcpy(ycpy, y, m*sizeof(double));
 
-				aprod(1, m, n, scale(plus(z_, u, 1.0, n), -1.0, n), ycpy, p); // z_ -> u - z_ and ycpy -> y + aprod(u-z_)
+				aprod(1, m, n, scale(plus(z_, u, -1.0, n), -1.0, n), ycpy, p); // z_ -> u - z_ and ycpy -> y + aprod(u-z_)
 				plus(roilsqr(x, ycpy, v, w, rho/2, p, 0), z_, -1.0, n); // x update
 				
 				plus(u,x,1.0,n); // store u + x in u for the moment

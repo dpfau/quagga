@@ -7,6 +7,7 @@ assert(prod(sz)==size(A,2));
 assert(numel(y)==size(A,1));
 X = zeros(sz);
 Z = zeros(sz);
+Z_ = Z;
 U = zeros(sz);
 rho = 100;
 
@@ -24,11 +25,13 @@ fprintf('Iter:\tObj:\t\tr_p\t\te_p\t\tr_d\t\te_d\n');
 while iter < maxIter && (r_p > e_p || r_d > e_d)
     iter = iter+1;
     
-    X = reshape(pinv([A; sqrt(rho)*eye(m*n)])*[y+A*(U(:)-Z(:)); zeros(m*n,1)],sz) + Z - U;
-    [u,s,v] = svd(U+X,0);
+    Z_ = U - Z_;
+    X = reshape(pinv([A; sqrt(rho)*eye(m*n)])*[y+A*(Z_(:)); zeros(m*n,1)],sz) - Z_;
+    U = U + X;
+    [u,s,v] = svd(U,0);
     s(1:m+1:end) = max(0,s(1:m+1:end)-lam/rho);
     Z_ = u*s*v';    
-    U = U + X - Z_;
+    U = U - Z_;
     
     r_p = norm(X-Z_,'fro');
     r_d = norm(Z-Z_,'fro');
