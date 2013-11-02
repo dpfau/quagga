@@ -48,6 +48,7 @@ double normsq(const double x[], const int n) {
 	double y = 0.0;
 	int i;
 	for (i = 0; i < n; i++) y += x[i]*x[i];
+	return y;
 }
 
 double eucdist(const double x[], const double y[], int n) {
@@ -57,6 +58,13 @@ double eucdist(const double x[], const double y[], int n) {
 		d += (x[i] - y[i])*(x[i] - y[i]);
 	}
 	return sqrt(d);
+}
+
+void dump(FILE *fout, double x[], int n) {
+	int i;
+	for (i = 0; i < n; i++) {
+		fprintf(fout, "%f\n", x[i]);
+	}
 }
 
 void aprod(int mode, int m, int n, double x[], double y[], void *UsrWrk) {
@@ -220,6 +228,7 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 			double * ss = Malloc(nsv,double);
 			double * vv = Malloc(np*nsv,double);
 
+			if (show) printf("Iter:\tr_p\t\te_p\t\tr_d\t\te_d\n");
 			while(itn < itnlim && (r_p > e_p || r_d > e_d)) {
 				itn++;
 				memcpy(ycpy, y, m*sizeof(double));
@@ -234,11 +243,11 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 
 				r_p = eucdist(x,z_,n);
 				r_d = sqrt(normsq(plus(z,z_,-1.0,n),n));
-				e_p = eps_abs*sqrt(n) + 0.5*eps_rel*(sqrt(normsq(z,n))+sqrt(normsq(x,n)));
+				e_p = eps_abs*sqrt(n) + 0.5*eps_rel*(sqrt(normsq(z_,n))+sqrt(normsq(x,n)));
 				e_d = eps_abs*sqrt(n) + eps_rel*sqrt(normsq(u,n));
 
 				memcpy(z, z_, n*sizeof(double)); // copy contents of z_ into z
-
+				if (show) printf("%d\t%f\t%f\t%f\t%f\n",itn,r_p,e_p,r_d,e_d);
 			}
 
 			free(ycpy);
@@ -317,8 +326,42 @@ void testsvt() {
 	}
 }
 
+void testadmm() {
+	srand(time(NULL));
+	int isize[2] = {64,64};
+	int psize[2] = {8,8};
+	params p;
+	p.nroi = 8;
+	p.ndims = 2;
+	p.T = 32;
+	p.isize = isize;
+	p.psize = psize;
+	int c[p.nroi*p.ndims];
+	double v[p.nroi*p.T];
+
+	int i,j;
+	for (i = 0; i < p.nroi; i++) {
+		for (j = 0; j < p.ndims; j++) {
+			c[j + i*p.ndims] = rand() % isize[j];
+		}
+
+		for (j = 0; j < p.T; j++) {
+			v[j + i*p.T] = ((double)rand()/(double)RAND_MAX);
+		}
+	}
+	p.c = c;
+	p.v = v;
+
+	double x[p.nroi*isize[0]*isize[1]];
+	double y[p.T*isize[0]*isize[1]];
+	for (i = 0; i < p.T*isize[0]*isize[1]; i++) y[i] = ((double)rand()/(double)RAND_MAX);
+
+	roiadmm(x, y, &p, 1.0, 0.0, 1);
+}
+
 int main(int argc, char* argv[]) {
 	// testlsqr();
-	testsvt();
+	// testsvt();
+	testadmm();
 	return 0;
 }
