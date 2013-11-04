@@ -114,6 +114,7 @@ void svt(int m, int n, double A[], double B[], double U[], double s[], double Vt
 
 	int i,j,k;
 	int p = m<n?m:n; // Find the smaller dimension
+	memcpy(B,A,m*n*sizeof(double)); // to avoid destroying A, copy contents to B before SVD
 
 	// Set LAPACK variables
 	double workSize;
@@ -121,13 +122,13 @@ void svt(int m, int n, double A[], double B[], double U[], double s[], double Vt
     int lwork = -1;
     int *iwork = malloc(8*p);
     int info = 0;
-	dgesdd_("S", &m, &n, A, &m, s, U, &m, Vt, &p, work, &lwork, iwork, &info);
+	dgesdd_("S", &m, &n, B, &m, s, U, &m, Vt, &p, work, &lwork, iwork, &info);
 	if (info) exit(SVD_ERROR);
 	lwork = workSize;
 	work = malloc(lwork * sizeof *work);
 
 	// Call SVD
-	dgesdd_("S", &m, &n, A, &m, s, U, &m, Vt, &p, work, &lwork, iwork, &info);
+	dgesdd_("S", &m, &n, B, &m, s, U, &m, Vt, &p, work, &lwork, iwork, &info);
 	if (info) exit(SVD_ERROR);
 
 	// Threshold singular values

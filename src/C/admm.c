@@ -29,10 +29,14 @@ double * scale(double x[], const double c, const int n) {
 	return x;
 }
 
-double * times(int m, int n, double x[], double y[], double A[]) {
-// y = y + A*x
+double * times(int m, int n, double x[], double y[], double A[], int zero) {
+// y = y + A*x if zero == 0, else
+// y = A*x
 	int i,j;
 	for (i = 0; i < m; i++) {
+		if (zero!=0) {
+			y[i] = 0;
+		}
 		for (j = 0; j < n; j++) {
 			y[i] += A[i + j*m]*x[j];
 		}
@@ -91,7 +95,8 @@ void pinv(int m, int n, double A[], double B[], double U[], double s[], double V
 
 	int i,j,k;
 	int p = m<n?m:n; // Find the smaller dimension
-	svd(m, n, A, U, s, Vt);
+	memcpy(B,A,m*n*sizeof(double)); // SVD destroys the contents of the original array, so be sure to copy it.
+	svd(m, n, B, U, s, Vt);
 
 	// Invert nonzero singular values
 	for (i = 0; i < p; i++) {
@@ -117,7 +122,8 @@ void svt(int m, int n, double A[], double B[], double U[], double s[], double Vt
 
 	int i,j,k;
 	int p = m<n?m:n; // Find the smaller dimension
-	svd(m, n, A, U, s, Vt);
+	memcpy(B,A,m*n*sizeof(double)); // SVD destroys the contents of the original array, so be sure to copy it.
+	svd(m, n, B, U, s, Vt);
 
 	// Threshold singular values
 	for (i = 0; i < p; i++)
@@ -184,17 +190,17 @@ void admm(int m, int n, int p, double x[], double y[], double A[], double lambda
 		itn++;
 		memcpy(ycpy, y, m*sizeof(double));
 
-		times(m, n*p, scale(plus(z_, u, -1.0, n*p), -1.0, n*p), ycpy, A); // z_ -> u - z_ and ycpy -> y + A(u-z_)
-		plus(times(n*p, m, ycpy, x, Aeye), z_, -1.0, n*p); // x update
-		//dump(x,n*p);
-		
+		times(m, n*p, scale(plus(z_, u, -1.0, n*p), -1.0, n*p), ycpy, A, 0); // z_ -> u - z_ and ycpy -> y + A(u-z_)
+		times(n*p, m, ycpy, x, Aeye, 1);
+		plus(x, z_, -1.0, n*p); // x update
+
 		plus(u,x,1.0,n*p); // store u + x in u for the moment
 		svt(n, p, u, z_, uu, ss, vv, lambda/rho); // z -> svt_{lambda/rho}(u+x)
 		
 		plus(u,z_,-1.0,n*p); // u -> u + x - z
 
 		r_p = eucdist(x,z_,n*p);
-		r_d = sqrt(normsq(plus(z,z_,-1.0,n),n*p));
+		r_d = eucdist(z,z_,n*p);
 		e_p = eps_abs*sqrt(n*p) + 0.5*eps_rel*(sqrt(normsq(z_,n*p))+sqrt(normsq(x,n*p)));
 		e_d = eps_abs*sqrt(n*p) + eps_rel*sqrt(normsq(u,n*p));
 
