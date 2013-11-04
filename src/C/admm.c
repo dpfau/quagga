@@ -194,10 +194,10 @@ void admm(int m, int n, int p, double x[], double y[], double A[], double lambda
 		times(n*p, m, ycpy, x, Aeye, 1);
 		plus(x, z_, -1.0, n*p); // x update
 
-		plus(u,x,1.0,n*p); // store u + x in u for the moment
+		plus(u, x, 1.0, n*p); // store u + x in u for the moment
 		svt(n, p, u, z_, uu, ss, vv, lambda/rho); // z -> svt_{lambda/rho}(u+x)
 		
-		plus(u,z_,-1.0,n*p); // u -> u + x - z
+		plus(u, z_, -1.0, n*p); // u -> u + x - z
 
 		r_p = eucdist(x,z_,n*p);
 		r_d = eucdist(z,z_,n*p);

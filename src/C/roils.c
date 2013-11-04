@@ -120,7 +120,7 @@ void svt(int m, int n, double A[], double B[], double U[], double s[], double Vt
 	double workSize;
     double *work = &workSize;
     int lwork = -1;
-    int *iwork = malloc(8*p);
+    int *iwork = malloc(8*p*sizeof(int));
     int info = 0;
 	dgesdd_("S", &m, &n, B, &m, s, U, &m, Vt, &p, work, &lwork, iwork, &info);
 	if (info) exit(SVD_ERROR);
@@ -203,10 +203,10 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
     if (lambda == 0.0 && gamma == 0.0) { // just do least squares
     	roilsqr(x, y, v, w, 0.0, p, show); // warning: this changes the value of y
 	} else {
-		double rho = 10; // Dual learning rate
+		double rho = 100; // Dual learning rate
 
-		double eps_abs = 1e-3;
-		double eps_rel = 1e-3;
+		double eps_abs = 1e-6;
+		double eps_rel = 1e-6;
 
 		double r_p = DBL_MAX;
 		double r_d = DBL_MAX;
@@ -235,23 +235,22 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 				memcpy(ycpy, y, m*sizeof(double));
 
 				aprod(1, m, n, scale(plus(z_, u, -1.0, n), -1.0, n), ycpy, p); // z_ -> u - z_ and ycpy -> y + aprod(u-z_)
-				plus(roilsqr(x, ycpy, v, w, sqrt(rho), p, 0), z_, -1.0, n); // x update
+				roilsqr(x, ycpy, v, w, sqrt(rho), p, 0);
+				plus(x, z_, -1.0, n); // x update
 				
-				plus(u,x,1.0,n); // store u + x in u for the moment
+				plus(u, x, 1.0, n); // store u + x in u for the moment
 				svt(p->nroi, np, u, z_, uu, ss, vv, lambda/rho); // z -> svt_{lambda/rho}(u+x)
 				
-				plus(u,z_,-1.0,n); // u -> u + x - z
+				plus(u, z_, -1.0, n); // u -> u + x - z
 
 				r_p = eucdist(x,z_,n);
-				r_d = sqrt(normsq(plus(z,z_,-1.0,n),n));
+				r_d = eucdist(z,z_,n);
 				e_p = eps_abs*sqrt(n) + 0.5*eps_rel*(sqrt(normsq(z_,n))+sqrt(normsq(x,n)));
 				e_d = eps_abs*sqrt(n) + eps_rel*sqrt(normsq(u,n));
 
 				memcpy(z, z_, n*sizeof(double)); // copy contents of z_ into z
 				if (show) printf("%d\t%f\t%f\t%f\t%f\n",itn,r_p,e_p,r_d,e_d);
 			}
-
-			free(ycpy);
 
 			free(z);
 			free(z_);
@@ -261,6 +260,8 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 			free(ss);
 			free(vv);
 		}
+
+		free(ycpy);
 	}
 
 	free(v);
@@ -329,12 +330,12 @@ void testsvt() {
 
 void testadmm() {
 	srand(time(NULL));
-	int isize[2] = {64,64};
-	int psize[2] = {8,8};
+	int isize[2] = {512,512};
+	int psize[2] = {40,40};
 	params p;
-	p.nroi = 8;
+	p.nroi = 66;
 	p.ndims = 2;
-	p.T = 32;
+	p.T = 725;
 	p.isize = isize;
 	p.psize = psize;
 	int c[p.nroi*p.ndims];
@@ -353,11 +354,14 @@ void testadmm() {
 	p.c = c;
 	p.v = v;
 
-	double x[p.nroi*isize[0]*isize[1]];
-	double y[p.T*isize[0]*isize[1]];
+	double * x = Malloc(p.nroi*isize[0]*isize[1],double);
+	double * y = Malloc(p.T*isize[0]*isize[1],double);
 	for (i = 0; i < p.T*isize[0]*isize[1]; i++) y[i] = ((double)rand()/(double)RAND_MAX);
-
+	printf("Data initialized, running ADMM\n");
 	roiadmm(x, y, &p, 1.0, 0.0, 1);
+
+	free(x);
+	free(y);
 }
 
 int main(int argc, char* argv[]) {
