@@ -1,4 +1,4 @@
-function X = roiadmm(A,y,lam,sz)
+function X = roiadmm(A,y,lam,sz,rho)
 % Minimize 1/2*||A(X)-y||^2 + lam||X||_* by ADMM. For debugging.
 
 m = sz(1);
@@ -9,7 +9,6 @@ X = zeros(sz);
 Z = zeros(sz);
 Z_ = Z;
 U = zeros(sz);
-rho = 100;
 
 maxIter = 10000;
 r_p = Inf;

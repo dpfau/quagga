@@ -108,7 +108,7 @@ void aprod(int mode, int m, int n, double x[], double y[], void *UsrWrk) {
 	}
 }
 
-void svt(int m, int n, const double A[], double B[], double U[], double s[], double Vt[], double t) {
+void svt(int m, int n, double A[], double B[], double U[], double s[], double Vt[], double t) {
 // Singular value thresholding operator applied to mxn matrix A, with the result written to B
 // U, s, Vt hold the values of the SVD, and t is the amount to threshold.
 
@@ -202,7 +202,7 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
     if (lambda == 0.0 && gamma == 0.0) { // just do least squares
     	roilsqr(x, y, v, w, 0.0, p, show); // warning: this changes the value of y
 	} else {
-		double rho = 1.3; // Dual learning rate
+		double rho = 10; // Dual learning rate
 
 		double eps_abs = 1e-3;
 		double eps_rel = 1e-3;
@@ -234,7 +234,7 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
 				memcpy(ycpy, y, m*sizeof(double));
 
 				aprod(1, m, n, scale(plus(z_, u, -1.0, n), -1.0, n), ycpy, p); // z_ -> u - z_ and ycpy -> y + aprod(u-z_)
-				plus(roilsqr(x, ycpy, v, w, rho/2, p, 0), z_, -1.0, n); // x update
+				plus(roilsqr(x, ycpy, v, w, sqrt(rho), p, 0), z_, -1.0, n); // x update
 				
 				plus(u,x,1.0,n); // store u + x in u for the moment
 				svt(p->nroi, np, u, z_, uu, ss, vv, lambda/rho); // z -> svt_{lambda/rho}(u+x)
