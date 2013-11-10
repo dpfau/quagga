@@ -27,3 +27,10 @@ param.iter=1000;  % let us see what happens after 1000 iterations.
 param.D = W';
 H = mexTrainDL(X',param)';
 W = mexLasso(X',H',param)';
+
+for i = 1:k
+    if mean(W(:,k))<0
+        W(:,k) = -W(:,k);
+        H(k,:) = -H(k,:);
+    end
+end
