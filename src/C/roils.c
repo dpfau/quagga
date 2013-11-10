@@ -203,7 +203,7 @@ void roiadmm(double x[], double y[], params *p, double lambda, double gamma, int
     if (lambda == 0.0 && gamma == 0.0) { // just do least squares
     	roilsqr(x, y, v, w, 0.0, p, show); // warning: this changes the value of y
 	} else {
-		double rho = 100; // Dual learning rate
+		double rho = 10; // Dual learning rate
 
 		double eps_abs = 1e-6;
 		double eps_rel = 1e-6;
