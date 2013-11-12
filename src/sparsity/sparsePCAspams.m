@@ -7,7 +7,8 @@ X = X/sX; % scale the data to something reasonable
 mX = mean(X,2);
 X = bsxfun(@minus,X,mX);
 l = l*sqrt(size(X,2)); % This allows the results to scale properly as the number of columns in H increases.
-if nargin < 4
+if nargin < 4, verbose = false; end
+if nargin < 5
     [~,s,v] = svd(X,0);
     H = v(:,1:k)*sqrt(s(1:k,1:k));
 else
