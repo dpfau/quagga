@@ -1,4 +1,4 @@
-function [W,H,mX,sX] = sparsePCAspams(X,l,k,H0)
+function [W,H,mX,sX] = sparsePCAspams(X,l,k,verbose,H0)
 % Same as sparsePCA.m, but uses the SPAMS package
 % (http://spams-devel.gforge.inria.fr/) to do fast online inference
 
@@ -23,7 +23,7 @@ param.modeD=0; % just the L-2 norm <= 1 restriction
 param.K=k;  % learns a dictionary with 5 elements
 param.numThreads=1; % number of threads
 param.iter=1000;  % let us see what happens after 1000 iterations.
-param.verbose = 0;
+param.verbose = verbose;
 
 param.D = H;
 H = mexTrainDL(X',param)';
