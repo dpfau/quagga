@@ -7,39 +7,40 @@ if ischar(ind)
     ind = str2num(ind); % Sometimes has to be passed as a string because of the way arguments are passed to compiled matlab
 end
 
-if nargin < 2 % default settings for Ahrens group data
-    imSz = [1472,2048,41,1000];
-    patchSz = [64,64,4];
-    neuronSz = [15,15,2];
-    savePath = '/groups/freeman/freemanlab/Janelia/quagga/test/'; % can change this as desired
-    loader = @ahrensLoader;
-	stdThresh = 0.07;
-	stdPrctile = 99;
-    dff = false;
-    saveROI = true;
-else
-    if ischar(config) 
-        % occasionally when running this on a cluster, we have to pass things around by saving them
-        % and having individual nodes loading them. This would be so much easier on Hadoop or Spark.
-        load(config)
-    end
-    imSz = config.imSz;
-    neuronSz = config.neuronSz;
-    if isfield(config,'patchSz')
-        patchSz = config.patchSz;
-    else
-        patchSz = 2*config.neuronSz;
-        if imSz(3) == 1
-            patchSz(3) = 1;
-        end
-    end
-    savePath = config.savePath;
-    loader = config.patchLoader;
-    stdThresh = config.stdThresh;
-    stdPrctile = config.stdPrctile;
-    dff = config.dff;
-    saveROI = config.saveROI;
+% if nargin < 2 % default settings for Ahrens group data
+%     imSz = [1472,2048,41,1000];
+%     patchSz = [64,64,4];
+%     neuronSz = [15,15,2];
+%     savePath = '/groups/freeman/freemanlab/Janelia/quagga/test/'; % can change this as desired
+%     loader = @ahrensLoader;
+%     stdThresh = 0.07;
+%     stdPrctile = 99;
+%     dff = false;
+%     saveROI = true;
+% else
+if ischar(config) 
+    % occasionally when running this on a cluster, we have to pass things around by saving them
+    % and having individual nodes loading them. This would be so much easier on Hadoop or Spark.
+    load(config)
 end
+imSz = config.imSz;
+neuronSz = config.neuronSz;
+if isfield(config,'patchSz')
+    patchSz = config.patchSz;
+else
+    patchSz = 2*config.neuronSz;
+    if imSz(3) == 1
+        patchSz(3) = 1;
+    end
+end
+savePath = config.savePath;
+loader = config.patchLoader;
+stdThresh = config.stdThresh;
+stdPrctile = config.stdPrctile;
+dff = config.dff;
+saveROI = config.saveROI;
+addpath(genpath(config.spamsPath));
+% end
 
 if isfield(config,'inds')
     ind = config.inds(ind); % reindex if we're working with a subset of patches
@@ -65,7 +66,7 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
         fprintf('Computing df/f\n');
         patch = bsxfun(@(x,y) (x-y)./y, patch, mean(patch,2));
     end
-	[W,H] = sparsePCA(patch,sparseWeight,numPC,false); % don't clutter the terminal with objective values
+	[W,H] = sparsePCAspams(patch,sparseWeight,numPC,false); % don't clutter the terminal with objective values
 	% Split ROI in the same sparse PC that aren't connected, and merge ROI that are
 	% in different sparse PCs but significantly overlap in space. This is all within
 	% one patch. This will be followed by a step that merges ROIs across different
