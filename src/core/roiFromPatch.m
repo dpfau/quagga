@@ -72,12 +72,12 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
 	% one patch. This will be followed by a step that merges ROIs across different
 	% patches
 	if debug
-		[ROI, junk] = segregateComponents(reshape(W,[truePatchSz,numPC]),truePatchSz,neuronSz);
+		[ROI, junk] = segregateComponents(reshape(full(W),[truePatchSz,numPC]),truePatchSz,neuronSz);
 		ROI  = cellfun(@(x) local2global(x,imSz(1:3),patchRng), ROI,  'UniformOutput', 0);
 		junk = cellfun(@(x) local2global(x,imSz(1:3),patchRng), junk, 'UniformOutput', 0);
 	else
 		ROI = cellfun(@(x) local2global(x,imSz(1:3),patchRng),...
-	          	     segregateComponents(reshape(W,[truePatchSz,numPC]),truePatchSz,neuronSz),...
+	          	     segregateComponents(reshape(full(W),[truePatchSz,numPC]),truePatchSz,neuronSz),...
 	           	     'UniformOutput', 0);
     end
     
