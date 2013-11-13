@@ -14,5 +14,6 @@ config.stdThresh = 0; % Just let everything through
 config.stdPrctile = 50; % So long as stdThresh is zero, this doesn't matter
 config.dff = true; % flag to indicate whether or not to compute df/f on a patch
 config.saveROI = true;
+config.spamsPath = fullfile(homePath,'../spams-matlab');
 
 runQuaggaTorque
