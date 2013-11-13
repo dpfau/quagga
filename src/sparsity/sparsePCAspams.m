@@ -36,3 +36,4 @@ for i = 1:k
         H(k,:) = -H(k,:);
     end
 end
+W = full(W);
