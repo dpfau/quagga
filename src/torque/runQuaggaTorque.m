@@ -48,7 +48,7 @@ while nFinished < nPatches
 				jobID = logFile(strfind(logFile,'stdout.txt-')+11:end);
 				if ~exist(fullfile(resultPath,dataset,sprintf('patch_%s.mat',jobID)),'file')
 					system(sprintf('rm %s%s',fullfile(logPath,'std*.txt-'),jobID));
-					system(sprintf('qsub roiFromPatch.sh -t %s -v config_path=%s',jobID,configPath)); % resubmit job to the cluster
+					system(sprintf('qsub %s -t %s -v config_path=%s',fullfile(quaggaPath,'src','torque','roiFromPatch.sh'),jobID,configPath)); % resubmit job to the cluster
 				end
 			end
 		end
