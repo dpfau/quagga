@@ -35,28 +35,28 @@ for i = 1:size(spatialMatrix,2)-1
 	end
 end
 
-vidObjData = VideoWriter([filename '_data.avi']);
-vidObjData.Quality = 100;
-vidObjData.FrameRate = 24;
-open(vidObjData);
-for i = 1:T
-	fprintf('Writing frame %d of %d\n',i,T);
-    set(h,'CData',data(:,:,z,i));
-    writeVideo(vidObjData, getframe(gca));
-end
-close(vidObjData);
-
-vidObjRecon = VideoWriter([filename '_reconstruction.avi']);
-vidObjRecon.Quality = 100;
-vidObjRecon.FrameRate = 24;
-open(vidObjRecon);
-set(gca,'CLim',[min(reconstruction(:)),max(reconstruction(:))])
-for i = 1:T
-	fprintf('Writing frame %d of %d\n',i,T);
-    set(h,'CData',reconstruction(:,:,z,i));
-    writeVideo(vidObjRecon, getframe(gca));
-end
-close(vidObjRecon);
+% vidObjData = VideoWriter([filename '_data.avi']);
+% vidObjData.Quality = 100;
+% vidObjData.FrameRate = 24;
+% open(vidObjData);
+% for i = 1:T
+% 	fprintf('Writing frame %d of %d\n',i,T);
+%     set(h,'CData',data(:,:,z,i));
+%     writeVideo(vidObjData, getframe(gca));
+% end
+% close(vidObjData);
+% 
+% vidObjRecon = VideoWriter([filename '_reconstruction.avi']);
+% vidObjRecon.Quality = 100;
+% vidObjRecon.FrameRate = 24;
+% open(vidObjRecon);
+% set(gca,'CLim',[min(reconstruction(:)),max(reconstruction(:))])
+% for i = 1:T
+% 	fprintf('Writing frame %d of %d\n',i,T);
+%     set(h,'CData',reconstruction(:,:,z,i));
+%     writeVideo(vidObjRecon, getframe(gca));
+% end
+% close(vidObjRecon);
 
 vidObjResid = VideoWriter([filename '_residual.avi']);
 vidObjResid.Quality = 100;

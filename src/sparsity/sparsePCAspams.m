@@ -18,9 +18,9 @@ param.mode=2; % this mode seems to give the same results as Pfau's code
 param.lambda=l;
 param.lambda2 = 0;
 param.posAlpha=0; % default is false
-param.modeD=0; % just the L-2 norm <= 1 restriction
-%param.modeD=1; % combined L-2 and L-1 (gamma1) norm for the dictionary
-%param.gamma1=0.3;
+% param.modeD=0; % just the L-2 norm <= 1 restriction
+param.modeD=1; % combined L-2 and L-1 (gamma1) norm for the dictionary
+param.gamma1=0.3;
 param.K=k;  % learns a dictionary with 5 elements
 param.numThreads=1; % number of threads
 param.iter=1000;  % let us see what happens after 1000 iterations.

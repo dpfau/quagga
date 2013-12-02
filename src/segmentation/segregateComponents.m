@@ -52,7 +52,9 @@ end
 ROI = connectComponents(ROI,overlap);
 %% Filter out anything with too high a surface area to volume ratio
 goodIdx = cellfun(@(x) SA2Vol(x) < maxSA2Vol, ROI);
-junk = [junk ROI(~goodIdx)];
+if nargout == 2
+    junk = [junk ROI(~goodIdx)];
+end
 ROI = ROI(goodIdx);
 
 function img = makeImg(idx,spatialPC)

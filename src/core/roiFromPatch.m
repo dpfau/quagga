@@ -1,8 +1,13 @@
-function [ROI,junk,patch,patchRng] = roiFromPatch(ind, config)
+function [ROI,junk,patch,patchRng] = roiFromPatch(ind, config, debug)
 
 % to compile: /usr/local/matlab-2010a/bin/mcc -R -singleCompThread -C -m ~/github/quagga/src/core/roiFromPatch.m -a ~/github/quagga/
 
-debug = true;
+% debug flags:
+%  0 - no debugging
+%  1 - outputs junk ROIs along with good ROIs
+%  2 - loads fixed patch from current directory instead of using loader
+
+if nargin < 3, debug = 0; end
 if ischar(ind)
     ind = str2num(ind); % Sometimes has to be passed as a string because of the way arguments are passed to compiled matlab
 end
@@ -39,7 +44,9 @@ stdThresh = config.stdThresh;
 stdPrctile = config.stdPrctile;
 dff = config.dff;
 saveROI = config.saveROI;
-addpath(genpath(config.spamsPath));
+if isfield(config,'spamsPath')
+    addpath(genpath(config.spamsPath));
+end
 % end
 
 if isfield(config,'inds')
@@ -54,7 +61,12 @@ end
 sparseWeight = 0.3; % weight on the sparse penalty for patch
 
 % Load patch from data file
-[patch,patchRng] = loadPatch(ind,imSz,patchSz,loader);
+if debug == 2
+    load patch.mat
+    patchRng = {[1001,1064],[1001,1064],[25,28]}; % fake range, doesn't matter
+else
+    [patch,patchRng] = loadPatch(ind,imSz,patchSz,loader);
+end
 truePatchSz = cellfun(@(x) diff(x)+1, patchRng); % If the patch goes over the edge of the image, this is the actual patch size
 
 patch = reshape(patch,prod(truePatchSz),imSz(end));
@@ -66,12 +78,12 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
         fprintf('Computing df/f\n');
         patch = bsxfun(@(x,y) (x-y)./y, patch, mean(patch,2));
     end
-	[W,H] = sparsePCAspams(patch,sparseWeight,numPC,false); % don't clutter the terminal with objective values
+	[W,H] = sparsePCA(patch,sparseWeight,numPC,true); % don't clutter the terminal with objective values
 	% Split ROI in the same sparse PC that aren't connected, and merge ROI that are
 	% in different sparse PCs but significantly overlap in space. This is all within
 	% one patch. This will be followed by a step that merges ROIs across different
 	% patches
-	if debug
+	if debug == 1
 		[ROI, junk] = segregateComponents(reshape(W,[truePatchSz,numPC]),truePatchSz,neuronSz);
 		ROI  = cellfun(@(x) local2global(x,imSz(1:3),patchRng), ROI,  'UniformOutput', 0);
 		junk = cellfun(@(x) local2global(x,imSz(1:3),patchRng), junk, 'UniformOutput', 0);
@@ -82,7 +94,7 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
     end
     
     if saveROI
-        if debug
+        if debug == 1
             save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI', 'junk','W','H')
         else
             save(fullfile(savePath,['patch_' num2str(ind)]), 'ROI')
