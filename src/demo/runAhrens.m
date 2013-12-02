@@ -4,6 +4,7 @@ dataPath   = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_
 resultPath = fullfile(homePath,'results');
 logPath    = fullfile(homePath,'logs');
 quaggaPath = fullfile(homePath,'quagga');
+
 dataset    = 'spontaneous';
 addpath(genpath(quaggaPath));
 
@@ -17,6 +18,7 @@ config.stdPrctile = 99;
 config.dff = false; % df/f has already been computed on this data
 config.saveROI = true;
 config.savePath = fullfile(resultPath,dataset);
+config.spamsPath = '';
 config.slice = 20;
 if config.slice
 	config.inds = getPatchSlice([0 0 config.slice],config.imSz(1:end-1),config.patchSz);

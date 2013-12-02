@@ -1,6 +1,6 @@
 function [ROI,junk,patch,patchRng] = roiFromPatch(ind, config, debug)
 
-% to compile: /usr/local/matlab-2010a/bin/mcc -R -singleCompThread -C -m ~/github/quagga/src/core/roiFromPatch.m -a ~/github/quagga/
+% to compile: /usr/local/matlab-2010a/bin/mcc -R -singleCompThread -C -m ~/github/quagga/src/core/roiFromPatch.m -a ~/github/quagga/ -a ~/Dropbox/helper-matlab/external/spams-matlab/
 
 % debug flags:
 %  0 - no debugging
