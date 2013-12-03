@@ -22,11 +22,21 @@ configPath = fullfile(resultPath,dataset,'config.mat');
 save(configPath,'config'); % save the config struct so that it can be loaded by nodes on the cluster
 
 %% Iterate over patches and send everything to the cluster
-nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
+if isfield(config,'inds');	
+	nPatches = length(config.inds);
+else
+	nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
+end
 patchExpr = fullfile(resultPath,dataset,'patch_*.mat');
 system(sprintf('rm %s',patchExpr)); % remove results of previous run
 system(sprintf('rm %s',fullfile(logPath,'*'))); % remove logs from previous run
-system(sprintf('qsub %s -t 1-%d -v config_path=%s',fullfile(quaggaPath,'src','torque','roiFromPatch.sh'),nPatches,configPath)); % send new run to the cluster
+if isfield(config,'inds')
+	for i = 1:length(config.inds)
+		system(sprintf('qsub %s -t %d -v config_path=%s',fullfile(quaggaPath,'src','torque','roiFromPatch.sh'),config.inds(i),configPath)); % send new run to the cluster
+	end
+else
+	system(sprintf('qsub %s -t 1-%d -v config_path=%s',fullfile(quaggaPath,'src','torque','roiFromPatch.sh'),nPatches,configPath)); % send new run to the cluster
+end
 
 %% Ping the cluster once every 10 seconds until all patches have finished running
 fprintf('Jobs submitted to cluster...\n')
