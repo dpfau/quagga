@@ -12,7 +12,7 @@ addpath(genpath(quaggaPath));
 config.imSz = [1472,2048,41,1000];
 config.neuronSz = [15,15,2]; % size of the average neuron, in pixels
 config.patchSz = [64,64,4];
-config.patchLoader = @(x,y,z)ahrensLoader(x,y,z,dataPath);
+config.patchLoader = @(x,y,z)ahrensLoader(x,y,z,fullfile(dataPath,dataset));
 config.stdThresh = 0.07;
 config.stdPrctile = 99;
 config.dff = false; % df/f has already been computed on this data
