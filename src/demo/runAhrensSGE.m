@@ -19,7 +19,7 @@ config.dff = false; % df/f has already been computed on this data
 config.saveROI = true;
 config.savePath = fullfile(resultPath,dataset);
 config.spamsPath = '';
-config.slice = 20;
+config.slice = 9;
 config.TIFF = false;
 if config.slice
 	config.inds = getPatchSlice([0 0 config.slice],config.imSz(1:end-1),config.patchSz);
