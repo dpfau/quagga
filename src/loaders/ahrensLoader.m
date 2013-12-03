@@ -1,6 +1,4 @@
-function patch = ahrensLoader(patchSz,xyzRng,tRng)
-
-dataPath = '/groups/ahrens/ahrenslab/Misha/data_fish7_sharing_sample/data_for_sharing_01/12-10-05/Dre_L1_HuCGCaMP5_0_20121005_154312.corrected.processed';
+function patch = ahrensLoader(patchSz,xyzRng,tRng,dataPath)
 
 patch = zeros([cellfun(@(x)diff(x)+1,xyzRng),diff(tRng)+1]);
 nImg = (diff(tRng)+1)*(diff(xyzRng{3})+1);
