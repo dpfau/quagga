@@ -19,14 +19,14 @@ end
 
 config.savePath = fullfile(resultPath,dataset);
 configPath = fullfile(resultPath,dataset,'config.mat');
+if ~isfield(config,'inds')
+	config.inds = 1:numPatch(config.imSz(1:end-1),config.patchSz);
+end
 save(configPath,'config'); % save the config struct so that it can be loaded by nodes on the cluster
 
 %% Iterate over patches and send everything to the cluster
-if isfield(config,'inds');	
-	nPatches = length(config.inds);
-else
-	nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
-end
+nPatches = length(config.inds);
+nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
 patchExpr = fullfile(resultPath,dataset,'patch_*.mat');
 system(sprintf('rm %s',patchExpr)); % remove results of previous run
 system(sprintf('rm %s',fullfile(logPath,'*'))); % remove logs from previous run
@@ -53,7 +53,7 @@ while nFinished < nPatches
 			for i = 2:length(logBreaks)
 				logFile = logFiles(logBreaks(i-1)+1:logBreaks(i)-1); % tokenize
 				jobID = logFile(strfind(logFile,'stdout.txt-')+11:end);
-				if ~exist(fullfile(resultPath,dataset,sprintf('patch_%s.mat',jobID)),'file')
+				if ~exist(fullfile(resultPath,dataset,sprintf('patch_%s.mat',config.inds(jobID))),'file')
 					system(sprintf('rm %s%s',fullfile(logPath,'std*.txt-'),jobID));
 					system(sprintf('qsub %s -t %s -v config_path=%s',fullfile(quaggaPath,'src','torque','roiFromPatch.sh'),jobID,configPath)); % resubmit job to the cluster
 				end

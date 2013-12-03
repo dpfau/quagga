@@ -78,7 +78,11 @@ if prctile(std(patch,[],2),stdPrctile) > stdThresh % threshold to decide there i
         fprintf('Computing df/f\n');
         patch = bsxfun(@(x,y) (x-y)./y, patch, mean(patch,2));
     end
-	[W,H] = sparsePCA(patch,sparseWeight,numPC,true); % don't clutter the terminal with objective values
+    if isempty(config.spamsPath) % The SPAMS implementation is much faster, but is tricky to get working with compiled MATLAB
+        [W,H] = sparsePCA(patch,sparseWeight,numPC,false);
+    else
+	   [W,H] = sparsePCAspams(patch,sparseWeight,numPC,false); % don't clutter the terminal with objective values
+    end
 	% Split ROI in the same sparse PC that aren't connected, and merge ROI that are
 	% in different sparse PCs but significantly overlap in space. This is all within
 	% one patch. This will be followed by a step that merges ROIs across different

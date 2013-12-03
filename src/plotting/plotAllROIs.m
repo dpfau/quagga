@@ -1,9 +1,10 @@
-function plotAllROIs(ROI,img,z,xRng,yRng)
+function plotAllROIs(ROI,img,z,xRng,yRng,num_flag)
 % Plot all ROIs through a particular image in a z stack
 
 if nargin < 3, z = 1; end
 if nargin < 4, xRng = [1, size(img,1)]; end
 if nargin < 5, yRng = [1, size(img,2)]; end
+if nargin < 6, num_flag = true; end
 
 imSz = size(img);
 if length(imSz) == 4
@@ -29,6 +30,8 @@ for i = 1:roiLen
 		for j = 1:length(B)
             line([B{j}(:,2)'; B{j}(2:end,2)', B{j}(1,2)],[B{j}(:,1)'; B{j}(2:end,1)', B{j}(1,1)],'Color',cols(i,:),'LineWidth',1);
         end
-		text(mean(B{1}(:,2)),mean(B{1}(:,1)),num2str(i),'Color','g','FontSize',10);
+        if num_flag
+    		text(mean(B{1}(:,2)),mean(B{1}(:,1)),num2str(i),'Color','g','FontSize',10);
+        end
 	end
 end
