@@ -26,7 +26,6 @@ save(configPath,'config'); % save the config struct so that it can be loaded by 
 
 %% Iterate over patches and send everything to the cluster
 nPatches = length(config.inds);
-nPatches = numPatch(config.imSz(1:end-1),config.patchSz);
 patchExpr = fullfile(resultPath,dataset,'patch_*.mat');
 system(sprintf('rm %s',patchExpr)); % remove results of previous run
 system(sprintf('rm %s',fullfile(logPath,'*'))); % remove logs from previous run
