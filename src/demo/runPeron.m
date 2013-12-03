@@ -15,5 +15,6 @@ config.stdPrctile = 50; % So long as stdThresh is zero, this doesn't matter
 config.dff = false;
 config.saveROI = true;
 config.spamsPath = fullfile(homePath,'../spams-matlab');
+config.TIFF = true;
 
 runQuaggaTorque

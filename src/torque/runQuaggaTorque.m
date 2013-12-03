@@ -1,19 +1,22 @@
 %% Load relevant data
-files = dir(fullfile(dataPath,dataset));
-imlen = 0;
-imheight = 512;
-imwidth = 512; % default, but we check anyway
-for i = 1:length(files)
-	if ~isempty(strfind(lower(files(i).name),'.tif'))
-		info = imfinfo(fullfile(dataPath,dataset,files(i).name));
-		imlen = imlen + length(info);
-		imheight = info(1).Height;
-		imwidth = info(1).Width;
+if config.TIFF
+	files = dir(fullfile(dataPath,dataset));
+	imlen = 0;
+	imheight = 512;
+	imwidth = 512; % default, but we check anyway
+	for i = 1:length(files)
+		if ~isempty(strfind(lower(files(i).name),'.tif'))
+			info = imfinfo(fullfile(dataPath,dataset,files(i).name));
+			imlen = imlen + length(info);
+			imheight = info(1).Height;
+			imwidth = info(1).Width;
+		end
 	end
+
+	%% Put finishing touches on configuration struct and save
+	config.imSz = [imheight,imwidth,1,imlen];
 end
 
-%% Put finishing touches on configuration struct and save
-config.imSz = [imheight,imwidth,1,imlen];
 config.savePath = fullfile(resultPath,dataset);
 configPath = fullfile(resultPath,dataset,'config.mat');
 save(configPath,'config'); % save the config struct so that it can be loaded by nodes on the cluster
